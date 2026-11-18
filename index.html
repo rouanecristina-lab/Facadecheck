@@ -1,0 +1,462 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>FaçadeCheck</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0B1220;--bg2:#0F1B2D;--card:rgba(20,32,52,.62);--bd:rgba(120,190,255,.16);--tx:#E6EEF9;--mu:#92A4BF;--ac:#22D3EE;--ac2:#818CF8;--ok:#34D399;--no:#FB7185;--gap:#FBBF24;--na:#7C8DA8;--grid:rgba(120,190,255,.06)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#EEF3FA;--bg2:#E3EBF6;--card:rgba(255,255,255,.8);--bd:rgba(30,70,120,.18);--tx:#10213A;--mu:#4A5E7C;--ac:#0369A1;--ac2:#4F46E5;--ok:#047857;--no:#BE123C;--gap:#B45309;--na:#5B6B84;--grid:rgba(30,70,120,.07)}}
+:root[data-theme="light"]{--bg:#EEF3FA;--bg2:#E3EBF6;--card:rgba(255,255,255,.8);--bd:rgba(30,70,120,.18);--tx:#10213A;--mu:#4A5E7C;--ac:#0369A1;--ac2:#4F46E5;--ok:#047857;--no:#BE123C;--gap:#B45309;--na:#5B6B84;--grid:rgba(30,70,120,.07)}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;min-height:100%;color:var(--tx);font:15px/1.45 "Space Grotesk",system-ui,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,rgba(34,211,238,.12),transparent),linear-gradient(var(--grid) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(var(--bg),var(--bg2));background-color:var(--bg)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+code,.mono,input[type=number]{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--card);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd)}
+header h1{font-size:17px;margin:0;letter-spacing:.02em}header .sp{flex:1}
+.btn{background:transparent;border:1px solid var(--bd);border-radius:8px;padding:6px 12px;transition:.2s}.btn:hover{border-color:var(--ac);box-shadow:0 0 12px -4px var(--ac)}.btn.pri{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#04121f;border:0;font-weight:600}
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--bd);border-radius:14px;padding:14px;box-shadow:0 8px 28px -14px #000;transition:.2s}.card:hover{border-color:var(--ac)}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--mu)}
+main{padding:16px;max-width:1400px;margin:0 auto}.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.shell{display:grid;gap:14px;grid-template-columns:190px 1fr 310px}.side{position:sticky;top:70px;align-self:start;display:flex;flex-direction:column;gap:6px}.hud{position:sticky;top:70px;align-self:start;display:flex;flex-direction:column;gap:12px}
+.cat{display:flex;gap:8px;align-items:center;text-align:left;padding:7px 9px;border:1px solid transparent;border-radius:10px;background:transparent}.cat.on{border-color:var(--ac);background:var(--card)}.cat small{display:block;color:var(--mu);font-size:11px}
+.it{margin-bottom:12px}.it:focus{border-color:var(--ac)}.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.top .sp{flex:1}
+.k{font-size:10px;text-transform:uppercase;letter-spacing:.1em;padding:2px 7px;border-radius:99px;border:1px solid}.kC{color:var(--no)}.kM{color:var(--gap)}.km{color:var(--mu)}
+.chip{font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid currentColor}.chip::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:6px;box-shadow:0 0 8px currentColor}
+.sC{color:var(--ok)}.sP{color:var(--gap)}.sN{color:var(--no)}.sS{color:var(--gap)}.sA{color:var(--na)}.s_{color:var(--mu)}
+.seg{display:flex;gap:2px;background:rgba(127,150,190,.12);border-radius:10px;padding:3px;margin:8px 0}.seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:6px 4px;font-size:13px;transition:.2s}
+.seg button[aria-checked=true]{background:var(--ac);color:#04121f;box-shadow:0 0 12px -2px var(--ac);font-weight:600}.seg button[data-r=N][aria-checked=true]{background:var(--no)}.seg button[data-r=S][aria-checked=true]{background:var(--gap)}.seg button[data-r=A][aria-checked=true]{background:var(--na)}.seg button[data-r=C][aria-checked=true]{background:var(--ok)}.seg button[data-r=P][aria-checked=true]{background:var(--gap)}.seg button{padding:6px 2px;font-size:12px}
+input[type=text],input[type=number],input[type=date],select,textarea{background:rgba(127,150,190,.1);border:1px solid var(--bd);border-radius:8px;padding:6px 9px;width:100%}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.lim{font-size:12px;color:var(--ac)}.hint{font-size:12px;color:var(--gap);margin:4px 0}
+.meter{position:relative;height:8px;border-radius:6px;background:color-mix(in srgb,var(--no) 35%,transparent);margin:8px 0}.meter b{position:absolute;top:0;bottom:0;background:var(--ok);opacity:.7;border-radius:6px}.meter i{position:absolute;top:-4px;width:3px;height:16px;background:var(--tx);border-radius:2px;transition:left .25s}
+.bar{height:6px;border-radius:6px;background:rgba(127,150,190,.2);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .4s}
+.ring{transform:rotate(-90deg)}.ring circle{fill:none;stroke-width:9}.ring .bg{stroke:rgba(127,150,190,.2)}.ring .fg{stroke:url(#g);stroke-linecap:round;transition:stroke-dashoffset .8s}
+.big{font-size:34px;font-weight:300;font-family:"JetBrains Mono",monospace}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--mu)}tr[data-go]{cursor:pointer}tr[data-go]:hover{background:rgba(34,211,238,.08)}
+.layer{cursor:pointer;transition:.2s}.layer:hover{filter:brightness(1.4)}.crit{animation:pu 1.6s infinite}@keyframes pu{50%{opacity:.5}}
+.cota{font:10px "JetBrains Mono",monospace;fill:var(--ac)}.layer:hover rect{stroke-width:3}.layer.on rect{filter:drop-shadow(0 0 5px var(--ac))}.lg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.lg button{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 9px}.lg button[aria-pressed=true]{border-color:var(--ac);background:rgba(34,211,238,.15)}.lg i{width:10px;height:10px;border-radius:3px;display:inline-block}.cota.bad{fill:var(--no)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--ac);padding:8px 16px;border-radius:10px;z-index:40}
+dialog{background:var(--bg2);color:var(--tx);border:1px solid var(--ac);border-radius:14px;max-width:640px;width:92%}dialog::backdrop{background:#0008}dialog{max-height:88vh;overflow:auto}dialog h4{margin:14px 0 4px;color:var(--ac)}dialog li,dialog p{font-size:14px}.ib{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:1.5px solid var(--ac);background:transparent;color:var(--ac);font:italic 700 13px Georgia,serif;line-height:1;padding:0;display:inline-grid;place-items:center}.ib:hover,.ib[aria-expanded=true]{background:var(--ac);color:#04121f}#pop{position:fixed;z-index:50;width:min(300px,calc(100vw - 16px));background:var(--bg2);border:1px solid var(--ac);border-radius:12px;padding:10px 12px;box-shadow:0 12px 32px -8px #000;font-size:13px}#pop[hidden]{display:none}#pop p{margin:6px 0 0}
+.two{display:grid;gap:14px;grid-template-columns:1fr 1fr}.cv{position:relative;height:300px}.sel{padding:3px 9px;border-radius:99px;font-weight:600;border:1px solid}
+@media(max-width:980px){.shell{grid-template-columns:1fr}.side{position:fixed;bottom:0;left:0;right:0;top:auto;flex-direction:row;overflow-x:auto;background:var(--bg2);border-top:1px solid var(--bd);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:25}.hud{position:static;order:-1}.two{grid-template-columns:1fr}main{padding-bottom:90px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.pr{display:none}
+@media print{:root{--bg:#fff;--bg2:#fff;--card:#fff;--bd:#bbb;--tx:#111;--mu:#444;--ac:#075985;--ok:#047857;--no:#BE123C;--gap:#B45309;--na:#555}body{background:#fff}header,.noprint,.side,.toast,body::before{display:none!important}.card{box-shadow:none;backdrop-filter:none;break-inside:avoid}.pr{display:block}.pg{break-after:page}.two{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><h1>Façade<span style="color:var(--ac)">Check</span></h1><span id="hn" class="mono lbl"></span><span class="sp"></span><span class="lbl" title="Versão do aplicativo">v1.1</span><span id="sv" class="lbl"></span>
+<button class="btn" data-act="home">Projetos</button><button class="btn" data-act="guia">Sobre o questionário</button><button class="btn" data-act="cfg">Configurações</button><button class="btn" data-act="io">Exportar / Importar</button><button class="btn" data-act="theme" aria-label="Alternar tema">Tema</button></header>
+<main id="app"></main><dialog id="dlg"></dialog>
+<script>
+/* ============ DADOS ============ */
+const PARAMETROS_NORMATIVOS={esp:{int:[5,20],ext:[20,30],teto:[0,20],alerta:15,emb:[15,25],reb:[2,5],cu:[20,30]},ra:{ext:.30,int:.20,ceram:.30,teto:.20},chapDias:3,embAcab:21,embAcabInd:14,curaH:12,friso:{larg:[15,20],rem:10},epu:.6,duplaCm2:400,jtH:3,jtV:6,tela:[15,20],verga:[20,30],peit:2};
+const P=PARAMETROS_NORMATIVOS;
+const CATS=[{id:'A',n:'Espessura'},{id:'B',n:'Aderência'},{id:'C',n:'Substrato / chapisco'},{id:'D',n:'Argamassa e execução'},{id:'E',n:'Juntas e frisos'},{id:'F',n:'Revest. cerâmico'},{id:'G',n:'Telas de reforço'},{id:'H',n:'Vãos e águas'},{id:'I',n:'Desempenho SVVE'},{id:'J',n:'Boas práticas / durabilidade'}];
+const DYN={jh:p=>Math.max(1,Math.ceil(p.alt/P.jtH)-1),jv:p=>Math.max(0,Math.ceil((p.comp||0)/P.jtV)-1)};
+const W={cer:p=>p.acab=='cer',fr:p=>p.acab=='pint',eb:p=>p.sist=='eb',cu:p=>p.sist=='cu',gt30:p=>num(p.ans.A1&&p.ans.A1.v)>DYN.espMax(p)};
+const I=(id,d,n,k,l,x={})=>Object.assign({id,c:id[0],d,n,k,l,t:'q'},x);
+const R=(id,d,n,k,l,u,mn,mx,x={})=>I(id,d,n,k,l,Object.assign({t:'r',u,mn,mx},x));
+/* CHECKLIST_DATA: k = C crítico, M maior, m menor; l = camada do corte */
+const CHECKLIST_DATA=[
+R('A1','Espessura total especificada – parede externa','NBR 13749:2013','C','emb','mm',...P.esp.ext),
+R('A2','Espessura – teto interno/externo (se aplicável)','NBR 13749:2013','m','emb','mm',null,P.esp.teto[1]),
+R('A3','Espessura – parede interna (se aplicável)','NBR 13749:2013','m','emb','mm',...P.esp.int),
+R('A4','Espessura do emboço','Carasek 2010','M','emb','mm',...P.esp.emb,{w:'eb'}),
+R('A5','Espessura do reboco','Carasek 2010','m','reb','mm',...P.esp.reb,{w:'eb'}),
+I('A6','Soma emboço + reboco dentro de 20–30 mm','NBR 13749:2013','M','emb',{w:'eb',t:'sum'}),
+R('A7','Camada única cobre 20–30 mm','NBR 13749:2013','M','reb','mm',...P.esp.cu,{w:'cu'}),
+I('A8','Espessura especificada em projeto','NBR 13749:2013','M','emb'),
+I('A9','Aplicação em camadas sucessivas (e > 30 mm)','NBR 13749:2013','C','emb',{w:'gt30'}),
+I('A10','Tela de reforço intermediária (e > 30 mm)','NBR 13749 / Bauer 2005','C','tela',{w:'gt30'}),
+R('B1','Ra prevista/ensaiada – média (parede externa)','NBR 13749:2013','C','emb','MPa',P.ra.ext,null),
+I('B2','Projeto prevê ensaio de arrancamento','NBR 13528','M','emb'),
+I('B3','Traço evita excesso de cimento (módulo alto, fissuração frágil)','Thomaz e Helene 2000','M','emb'),
+I('C1','Substrato caracterizado (sucção, rugosidade, limpeza, estabilidade)','Bauer 2005','M','base'),
+I('C2','Gradiente de rigidez E_subs > E_chapisco > E_emboço > E_reboco','Carasek 2010','M','chap'),
+I('C3','Tipo de chapisco especificado','NBR 7200:1998','M','chap'),
+I('C4','Chapisco coerente com a sucção do substrato','Carasek 2010','M','chap'),
+I('C5','Riscos do chapisco rolado considerados (planeza, selagem de poros)','Carasek 2010','m','chap'),
+R('C6','Cura úmida do chapisco (horas)','NBR 7200:1998','M','chap','h',P.curaH,null),
+I('D1','Tipo/traço da argamassa, propriedades frescas e retração','NBR 13749:2013','M','emb'),
+R('D2','Prazo chapisco → emboço','NBR 7200:1998','M','emb','dias',P.chapDias,null),
+R('D3','Prazo emboço → acabamento (21 d obra; 14 d industrializada c/ controle)','NBR 7200:1998','M','reb','dias',P.embAcab,null),
+I('D4','Controle tecnológico de canteiro previsto','NBR 7200:1998','m','emb'),
+I('E1','Friso horizontal a cada pavimento, alinhado às vigas','ABCP 2002 / NBR 13755','M','friso',{w:'fr'}),
+R('E2','Largura do friso','ABCP 2002','M','friso','mm',...P.friso.larg,{w:'fr'}),
+R('E3','Espessura remanescente no fundo do friso (profundidade = e/2)','ABCP 2002','M','friso','mm',P.friso.rem,null,{w:'fr',h:'fr'}),
+I('E4','Friso executado após desempeno; marcação com nível/régua','ABCP 2002','m','friso',{w:'fr'}),
+I('E5','Juntas estruturais acompanhadas e seladas com mástique elastomérico','NBR 13529:2013','C','base'),
+R('E6','Juntas horizontais de movimentação previstas (nº)','NBR 13755:2017','M','cer','un',null,null,{w:'cer',dyn:'jh'}),
+R('E7','Juntas verticais previstas (nº, espaçamento ≤ 6 m)','NBR 13755:2017','M','cer','un',null,null,{w:'cer',dyn:'jv'}),
+I('E8','Seccionamento total, tarugo, selante PU/MS e rejunte deformável','NBR 13755:2017','M','cer',{w:'cer'}),
+I('E9','Dessolidarização em quinas, platibandas e esquadrias','NBR 13755:2017','M','cer',{w:'cer'}),
+I('F1','Placas BIa/BIb','NBR 13755:2017','M','cer',{w:'cer'}),
+R('F2','EPU das placas','NBR 13755:2017','M','cer','mm/m',null,P.epu,{w:'cer'}),
+I('F3','Argamassa colante AC-III ou AC-III-E','NBR 13755:2017','M','col',{w:'cer'}),
+I('F4','Dupla colagem (área da placa em cm² no campo; exigida se > 400 cm² ou acima do térreo; tardoz > 95%)','NBR 13755:2017','M','col',{w:'cer',t:'dc',u:'cm²'}),
+I('F5','Projeto executivo com modulação e juntas de assentamento','NBR 13755:2017','m','cer',{w:'cer'}),
+I('G1','Tela na interface concreto/alvenaria (vigas e pilares)','Medeiros e Sabbatini 1999','M','tela'),
+R('G2','Transpasse da tela para cada lado','Medeiros e Sabbatini 1999','M','tela','cm',...P.tela),
+I('G3','Tela no emboço (terço médio/externo), nunca sobre base crua','Bauer 2005','M','tela'),
+I('G4','Fixação mecânica por pinos galvanizados, sem ondulações','Medeiros e Sabbatini 1999','m','tela'),
+R('H1','Vergas/contravergas além das faces do vão','Thomaz e Helene 2000','M','vao','cm',...P.verga),
+R('H2','Caimento do peitoril para o exterior','NBR 15575-4:2025','C','vao','%',P.peit,null),
+I('H3','Pingadeira/lacrimal na face inferior do ressalto','NBR 15575-4:2025','M','vao'),
+I('H4','Detalhes de arremates de esquadrias e interfaces','NBR 15575-4:2025','m','vao'),
+I('I1','Segurança estrutural e resistência mecânica (vento, impacto)','NBR 15575-4:2025','C','emb'),
+I('I2','Estanqueidade à água de chuva','NBR 15575-4:2025','C','emb'),
+I('I3','Resistência a choques térmicos','NBR 15575-4:2025','M','emb'),
+I('I4','Conforto térmico-acústico','NBR 15575-4:2025','m','emb'),
+I('J1','Platibandas e muretas com rufo/pingadeira e proteção de topo (evita infiltração)','Boa prática – Thomaz e Helene 2000','M','vao'),
+I('J2','Pingadeiras ou frisos em soleiras e elementos salientes (marquises, balanços)','Boa prática – ABCP 2002','M','vao'),
+I('J3','Reforço (tela ou cantoneira) em quinas e encontros com esquadrias','Boa prática – Medeiros e Sabbatini 1999','M','tela'),
+I('J4','Estudo de movimentações térmicas e higroscópicas da base e do revestimento','Boa prática – Bauer 2005','M','base'),
+I('J5','Detalhamento gráfico em escala (juntas, frisos, telas, pingadeiras, arremates)','Boa prática – ABCP 2002','M','emb'),
+I('J6','Tinta/textura compatível: permeável ao vapor e resistente à alcalinidade da base','Boa prática – Carasek 2010','M','reb',{w:'fr'}),
+I('J7','Painel-protótipo (mock-up) previsto e aprovado antes da execução','Boa prática – Bauer 2005','m','emb'),
+I('J8','Plano de inspeção e manutenção preventiva (selantes, juntas, pintura) com periodicidade','Boa prática – manutenção preventiva','M','emb'),
+I('J9','Hidrofugante ou proteção superficial avaliada em exposição severa à chuva dirigida','Boa prática – Thomaz e Helene 2000','m','reb'),
+I('J10','Ancoragens de andaimes/balancins previstas, com furos posteriormente selados','Boa prática – execução','m','emb'),
+I('J11','Inspeção por percussão do tardoz cerâmico prevista no controle de execução','Boa prática – Medeiros e Sabbatini 1999','m','cer',{w:'cer'})];
+const LAYERS=[['base','Base','#5b6b84',10,60],['chap','Chapisco','#7c8da8',70,6],['emb','Emboço',null,76,55],['reb','Reboco / única',null,131,10],['col','Arg. colante',null,141,8],['cer','Placa cerâmica',null,149,14]];
+/* ===== REVISÃO conforme o TCC: novos itens, correções, origens ===== */
+DYN.verga=p=>Math.max(20,Math.ceil((p.vao||0)*20));
+DYN.raInt=p=>p.acab=='cer'?P.ra.ceram:P.ra.int;
+DYN.embAc=p=>p.arg=='ind'?P.embAcabInd:P.embAcab;
+W.trans=p=>p.subs!='pc';
+
+CHECKLIST_DATA.push(
+R('B4','Ra – parede interna (≥ 0,20 MPa pintura/base p/ reboco; ≥ 0,30 MPa cerâmica ou laminado), se aplicável','NBR 13749:2013','M','emb','MPa',null,null,{dyn:'raInt'}),
+R('B5','Ra – teto (se aplicável)','NBR 13749:2013','m','emb','MPa',P.ra.teto,null),
+I('C7','Rugosidade superficial da base caracterizada/especificada','Bauer 2005; Barros e Sabbatini 2001','M','base'),
+I('C8','Limpeza e sanidade da base (poeira, desmoldantes, eflorescências) com tratamento previsto','Bauer 2005; Barros e Sabbatini 2001','M','base'),
+R('F6','Preenchimento do tardoz da placa (dupla colagem)','NBR 13755:2017','M','col','%',95,100,{w:'cer'}),
+I('H5','Vergas sobre todos os vãos e contravergas sob janelas, com altura ≥ 10 cm','NBR 8545:1984','M','vao'),
+I('H6','Vãos > 2,40 m: verga/contraverga calculada como viga (N/A se não houver)','NBR 8545:1984','M','vao'),
+I('H7','Vãos próximos e na mesma altura: verga contínua','NBR 8545:1984; Thomaz et al. 2009','m','vao'),
+I('H8','Impermeabilização do requadro/base da contraverga sob o peitoril','Thomaz et al. 2009; Baía e Sabbatini 2000','M','vao'),
+R('H9','Projeção do peitoril além do plano da fachada acabada','Baía e Sabbatini 2000; Thomaz e Helene 2000','M','vao','cm',2,5),
+R('H10','Lacrimal do peitoril: largura','Baía e Sabbatini 2000','M','vao','mm',10,null),
+R('H11','Lacrimal do peitoril: profundidade','Baía e Sabbatini 2000','M','vao','mm',5,null),
+R('H12','Lacrimal: afastamento da aresta externa','Baía e Sabbatini 2000','M','vao','cm',1.5,null),
+R('H13','Embutimento lateral do peitoril (ou abas de contenção)','Baía e Sabbatini 2000','M','vao','cm',2,null),
+I('H14','Junta caixilho-peitoril com selante elastomérico estanque (resistente a UV)','NBR 10821-2:2023','M','vao'),
+I('I5','Segurança contra incêndio / compartimentação do SVVE','NBR 15575-4:2025','M','emb'),
+I('K1','Projetos de arquitetura, estrutura, alvenaria, esquadrias e fachada compatibilizados','Antunes 2011; Bauer 2005','M','emb'),
+I('K2','Vãos, vergas e peitoris coerentes entre as pranchas de arquitetura e estrutura','Thomaz et al. 2009','M','vao'));
+const F=id=>CHECKLIST_DATA.find(i=>i.id==id);
+Object.assign(F('B1'),{d:'Ra prevista/ensaiada – parede externa (pintura ou cerâmica)'});
+Object.assign(F('C1'),{d:'Absorção/sucção do substrato caracterizada'});
+Object.assign(F('C5'),{d:'Memorial alerta para os riscos do chapisco rolado (planeza, vai e vem, consistência, selagem de poros)'});
+Object.assign(F('D3'),{dyn:'embAc',mn:null,d:'Prazo emboço → acabamento (21 d argamassa de obra; 14 d industrializada com controle de retração)'});
+Object.assign(F('D4'),{d:'Memorial prevê controle tecnológico de canteiro (inspeção de interfaces e ensaios)'});
+Object.assign(F('E3'),{t:'fp',mn:null,mx:null,u:'mm',h:'fr',d:'Profundidade do friso = e/2, com remanescente ≥ 10 mm'});
+Object.assign(F('E4'),{d:'Projeto especifica execução do friso logo após o desempeno, com marcação por nível e régua guia'});
+Object.assign(F('F2'),{ex:1});
+Object.assign(F('G2'),{mn:P.tela[0],mx:null,d:'Transpasse da tela para cada lado da linha de contato (mín. 15 cm; 20 cm recomendável)'});
+Object.assign(F('H1'),{dyn:'verga',mn:null,mx:null,d:'Transpasse lateral de vergas/contravergas (≥ 20 cm e ≥ L/5)',n:'NBR 8545:1984; Thomaz et al. 2009'});
+Object.assign(F('H2'),{d:'Caimento do peitoril para o exterior (mín. 2%; recomendável 3 a 5%)',n:'Thomaz e Helene 2000; Baía e Sabbatini 2000'});
+F('B3').n='Bauer 2005; Medeiros e Sabbatini 1999';F('E3').n='ABCP 2002';
+/* ===== 2ª revisão: foco em análise de projeto ===== */
+P.traco={areiaMin:4,consumoMax:350};
+CHECKLIST_DATA.push(R('B6','Consumo de cimento por m³ de argamassa especificado (evita excesso de cimento)','Carasek 2010; Bauer 2005 (valor de referência editável)','M','emb','kg/m³',null,P.traco.consumoMax));
+Object.assign(F('A1'),{d:'Espessura total máxima do revestimento externo descrita no projeto (emboço + reboco, ou camada única): 20 a 30 mm'});
+Object.assign(F('A4'),{t:'iv',u:'mm',mn:null,mx:null,d:'Projeto descreve o intervalo de espessura do emboço (mín. e máx.)'});
+Object.assign(F('A5'),{t:'iv',u:'mm',mn:null,mx:null,d:'Projeto descreve o intervalo de espessura do reboco (mín. e máx.)'});
+Object.assign(F('A6'),{d:'Soma dos valores máximos de emboço e reboco não ultrapassa 30 mm'});
+Object.assign(F('A7'),{t:'iv',u:'mm',mn:null,mx:30,d:'Projeto descreve o intervalo de espessura da camada única (máx. ≤ 30 mm)'});
+Object.assign(F('B1'),{d:'Projeto especifica o valor mínimo de Ra para a parede externa (norma: ≥ 0,30 MPa)'});
+Object.assign(F('B3'),{t:'r',u:'partes de areia/1 cimento',mn:P.traco.areiaMin,mx:null,d:'Traço especificado: partes de areia por 1 parte de cimento, em volume (traço mais rico que 1:4 indica excesso de cimento)',n:'Carasek 2010; Bauer 2005 (valor de referência editável)'});
+Object.assign(F('C1'),{d:'-'});
+Object.assign(F('C6'),{t:'q',u:null,mn:null,mx:null,d:'Projeto/memorial solicita a cura úmida do chapisco (NBR 7200: nas primeiras 24 h)'});
+Object.assign(F('C7'),{d:'-'});
+Object.assign(F('C8'),{d:'Projeto/memorial indica a necessidade de limpeza do substrato (poeira, desmoldante, eflorescências) antes da execução do revestimento'});
+['C1','C7'].forEach(i=>CHECKLIST_DATA.splice(CHECKLIST_DATA.indexOf(F(i)),1));
+Object.assign(F('E6'),{dyn:null,mn:null,mx:P.jtH,u:'m',d:'Espaçamento vertical entre juntas horizontais de movimentação (m): a cada pavimento (vigas) ou, no máximo, a cada 3 m de altura'});
+Object.assign(F('E7'),{dyn:null,mn:null,mx:P.jtV,u:'m',d:'Espaçamento horizontal entre juntas verticais de movimentação (m): máximo de 6 m em panos retos contínuos'});
+Object.assign(F('F2'),{t:'q',ex:0,d:'Projeto especifica o EPU das placas (NBR 13755: inferior a 0,6 mm/m)'});
+Object.assign(F('F6'),{t:'q',u:null,mn:null,mx:null,d:'Projeto informa o limite de % de pontos ocos (som cavo) admitido nas placas assentadas (preenchimento do tardoz ≥ 95%)'});
+['A2','A3','B4','B5','C2','C5','K1','K2'].forEach(i=>CHECKLIST_DATA.splice(CHECKLIST_DATA.indexOf(F(i)),1));
+['A9','A10'].forEach(i=>F(i).n='NBR 7200:1998; Bauer 2005');
+['E1','E2','E4','E5'].forEach(i=>F(i).n='ABCP 2002');
+['G1','G2','G3','G4'].forEach(i=>{F(i).w='trans';F(i).n='Bauer 2005; NBR 7200:1998'});
+const ORGS={N:'A1 A2 A3 A7 A8 A9 A10 B1 B4 B5 C6 D1 D2 D3 E6 E7 E8 E9 F1 F2 F3 F4 F5 F6 H1 H3 H4 H5 H6 H14 I1 I2 I3 I4 I5'.split(' '),L:'A4 A5 A6 B3 C1 C2 C3 C4 C5 C7 C8 D4 E1 E2 E3 E4 E5 G1 G2 G3 G4 H2 H7 H8 H9 H10 H11 H12 H13 B6'.split(' ')},ORGN={N:'Norma',L:'Literatura',B:'Boa prática'};
+/* ============ UTIL ============ */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const num=v=>v===''||v==null||isNaN(+v)?null:+v;
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let db={projects:[],cfg:{w:{C:3,M:2,m:1},ok:90,part:70,pend:false,pen:.5}},S={view:'home',pid:null,cat:'A',layer:null},charts=[];
+const cur=()=>db.projects.find(p=>p.id==S.pid);
+const vis=p=>CHECKLIST_DATA;
+/* origem: exigência de norma (cita NBR) ou boa prática (literatura técnica) */
+const org=it=>ORGS.N.includes(it.id)?'N':ORGS.L.includes(it.id)?'L':'B';
+const oi=(c,x)=>c.org[x].w?Math.max(0,c.org[x].s/c.org[x].w*100).toFixed(0)+'%':'—';
+/* ============ REGRAS (funções puras) ============ */
+const lim=(it,p)=>it.dyn?{mn:DYN[it.dyn](p),mx:null}:{mn:it.mn,mx:it.dmx?DYN[it.dmx](p):it.mx};
+const inRange=(v,mn,mx)=>!((mn!=null&&v<mn)||(mx!=null&&v>mx));
+const dcReq=(p,a)=>p.pav>1||num(a)>P.duplaCm2;
+function st(it,p){const a=p.ans[it.id]||{};if(it.w&&!W[it.w](p))return'A';
+ if(it.t=='q')return a.r||null;
+ if(it.t=='dc'){if(a.r=='A')return'A';const v=num(a.v);return dcReq(p,v)?(a.r||null):(v!=null?'C':null)}
+ if(it.t=='sum'){const e=num(p.ans.A4&&p.ans.A4.v2),r=num(p.ans.A5&&p.ans.A5.v2);if(e==null||r==null)return a.r=='A'?'A':null;return e+r<=P.esp.ext[1]?'C':'N'}
+ if(it.t=='iv'){const v=num(a.v),w=num(a.v2);if(v==null||w==null)return a.r=='A'||a.r=='S'?a.r:null;const mx=it.dmx?DYN[it.dmx](p):it.mx;return v<=w&&(mx==null||w<=mx)?'C':'N'}
+ if(it.t=='fp'){const v=num(a.v),e=num(p.ans.A1&&p.ans.A1.v);if(v==null)return a.r=='A'||a.r=='S'?a.r:null;if(e==null)return null;return Math.abs(v-e/2)<=1&&e-v>=P.friso.rem?'C':'N'}
+ const v=num(a.v);if(v==null)return a.r=='A'||a.r=='S'?a.r:null;const L=lim(it,p);if(it.ex&&L.mx!=null&&v>=L.mx)return'N';return inRange(v,L.mn,L.mx)?'C':'N'}
+/* ============ CÁLCULO ============ */
+function calc(p){const Wt=db.cfg.w,o={cat:{},T:{s:0,w:0,ap:0,c:0,n:0,g:0,na:0,ans:0,vis:0},crit:[],nc:[],heat:{}};
+ CATS.forEach(c=>o.cat[c.id]={s:0,w:0,vis:0,ans:0});o.org={N:{s:0,w:0},L:{s:0,w:0},B:{s:0,w:0}};
+ vis(p).forEach(it=>{const s=st(it,p),C=o.cat[it.c],T=o.T;C.vis++;T.vis++;if(s){C.ans++;T.ans++}
+  if(s=='A'){T.na++;return}const w=Wt[it.k];let sc=0;
+  if(s==null||s=='S'){T.g++;o.nc.push({it,s:'S'});if(it.k=='C')o.crit.push(it);if(s=='S'){sc=-(db.cfg.pen||0);T.pn=(T.pn||0)-sc*w}else T.pd=(T.pd||0)+1}
+  else if(s=='C'){sc=1;T.c++}else if(s=='P'){sc=.5;T.p=(T.p||0)+1;o.nc.push({it,s:'P'})}else{T.n++;o.nc.push({it,s:'N'});if(it.k=='C')o.crit.push(it)}
+  T.ap++;T.w+=w;T.s+=w*sc;C.w+=w;C.s+=w*sc;const og=o.org[org(it)];og.w+=w;og.s+=w*sc;
+  const h=o.heat[it.c+it.k]||(o.heat[it.c+it.k]={a:0,c:0,l:[]});h.a++;h.c+=sc;h.l.push(it.id+(sc?' ok':' x'))});
+ o.idx=o.T.w?Math.max(0,o.T.s/o.T.w*100):0;Object.values(o.cat).forEach(c=>c.idx=c.w?Math.max(0,c.s/c.w*100):null);
+ let k=o.idx>=99.999?3:o.idx>=db.cfg.ok?2:o.idx>=db.cfg.part?1:0;if(o.crit.length&&k>1)k=1;o.k=k;o.fill=o.T.vis?o.T.ans/o.T.vis*100:0;
+ o.nc.sort((a,b)=>'CMm'.indexOf(a.it.k)-'CMm'.indexOf(b.it.k));return o}
+const VERD=['Insuficiente','Satisfatório','Excelente','Conforme'],VC=['var(--no)','var(--gap)','var(--ok)','var(--ok)'];
+const SN={C:'Conforme',N:'Não conforme',A:'N/A',S:'Sem informação',P:'Parcial'},KN={C:'Crítico',M:'Maior',m:'Menor'};
+function estStats(p){const v=[];(p.estudo||[]).forEach(r=>['mn','mx','md'].forEach(f=>{const x=num(r[f]);if(x!=null)v.push(x)}));if(!v.length)return null;
+ const m=v.reduce((a,b)=>a+b)/v.length,sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)**2,0)/v.length);return{n:v.length,pct:v.filter(x=>inRange(x,...P.esp.ext)).length/v.length*100,mn:Math.min(...v),mx:Math.max(...v),m,sd}}
+const action=(x)=>(x=Object.assign({},x,{it:Object.assign({},x.it,{d:dtxt(x.it,cur())})}))&&x.s=='P'?'Complementar o detalhamento: '+x.it.d:x.s=='N'?'Adequar ao limite normativo: '+x.it.d:'Definir e documentar em projeto: '+x.it.d;
+const limTxt=(it,p)=>{if(it.t!='r')return'';const L=lim(it,p),u=' '+it.u;return L.mn!=null&&L.mx!=null?L.mn+' – '+L.mx+u:L.mn!=null?'≥ '+L.mn+u:(it.ex?'< ':'≤ ')+L.mx+u};
+const hint=(it,p)=>{const v=num((p.ans[it.id]||{}).v),e=num(p.ans.A1&&p.ans.A1.v);
+ if(it.id=='A1'&&v!=null){if(v>30)return'e > 30 mm: exigir camadas sucessivas e tela intermediária (itens A9/A10 criados).';if(v<P.esp.alerta)return'e < 15 mm: insuficiência de estanqueidade e cobrimento.';if(v<20)return'e < 20 mm em parede externa: não conforme com a NBR 13749.'}
+ if(it.id=='A7')return'Limite do valor máximo: '+DYN.espMax(p)+' mm ('+(p.acab=='cer'?'cerâmica':(p.ans.A1&&p.ans.A1.tela?'pintura/textura com tela galvanizada, marcada no A1':'pintura/textura'))+').';
+if(it.t=='sum'){const e2=num(p.ans.A4&&p.ans.A4.v2),r2=num(p.ans.A5&&p.ans.A5.v2);return e2!=null&&r2!=null?'Soma dos máximos = '+(e2+r2)+' mm (limite: 30 mm).':'Preencha os máximos de A4 e A5.'}
+if(it.h=='fr')return e?'Esperado: e/2 = '+(e/2).toFixed(1)+' mm'+(v!=null?' · remanescente = '+(e-v).toFixed(1)+' mm (mín. '+P.friso.rem+')':'')+'.':'Informe A1 para calcular e/2.';
+ if(it.dyn)return'Limite calculado: '+lim(it,p).mn+' '+it.u+({jh:' (altura '+p.alt+' m)',jv:' (pano de '+(p.comp||0)+' m)',verga:' (maior vão '+(p.vao||0)+' m; L/5)',raInt:' (conforme o acabamento)',embAc:' (conforme o tipo de argamassa)'}[it.dyn]||'')+'.';
+ if(it.t=='dc')return dcReq(p,(p.ans[it.id]||{}).v)?'Dupla colagem EXIGIDA (placa > 400 cm² ou acima do térreo): confirme abaixo.':'Dupla colagem não exigida.';return''};
+/* ============ PERSISTÊNCIA ============ */
+let t0=0;function save(){try{localStorage.setItem('facadecheck3',JSON.stringify(db));t0=Date.now()}catch(e){}tick()}
+function tick(){const e=$('#sv');if(e)e.textContent=t0?'Salvo há '+Math.round((Date.now()-t0)/1000)+' s':'Sem armazenamento local'}setInterval(tick,2000);
+function load(){try{const j=localStorage.getItem('facadecheck3');if(j){const d=JSON.parse(j);if(d&&d.projects&&d.projects.length)db=d}}catch(e){}if(!db.projects.length){db.projects=[sample(1),sample(0)]}}
+function sample(g){const p={id:'s'+g,nome:g?'Edifício Aurora':'Residencial Vila Nova',end:g?'Av. Central, 100':'Rua das Flores, 45',resp:g?'Eng. A. Lima':'Eng. B. Souza',data:'2026-10-01',acab:g?'cer':'pint',subs:'conc',sist:'eb',alt:g?36:24,pav:g?12:8,comp:g?18:30,vao:1.5,arg:g?'ind':'obra',ans:{},estudo:g?[{p:'Fachada Norte',mn:22,mx:28,md:25},{p:'Fachada Sul',mn:21,mx:29,md:25}]:[{p:'Fachada Norte',mn:14,mx:34,md:26},{p:'Fachada Sul',mn:18,mx:31,md:24}]};
+ const bad={A1:34,B1:.22,D3:10,E3:6,E6:1};
+ CHECKLIST_DATA.filter(i=>!i.w||['cer','fr','eb','cu'].includes(i.w)).filter(i=>!i.w||W[i.w](p)).forEach((it,n)=>{
+  if(it.t=='q')p.ans[it.id]={r:g||(n%4!=1&&n%7!=3)?'C':n%7==3?'S':'N'};
+  else if(it.t=='dc')p.ans[it.id]={v:g?300:500,r:g?'C':'N'};
+  else if(it.t=='sum'){}else if(it.t=='iv'){p.ans[it.id]={v:15,v2:20}}else if(it.t=='fp'){p.ans[it.id]={v:g?12.5:6}}
+  else{const L=lim(it,p);let v=it.mn!=null&&it.mx!=null?(it.mn+it.mx)/2:it.mn!=null?(it.mn?it.mn*1.3:1):it.mx*.6;if(it.dyn)v=L.mn+(it.u=='MPa'?.1:1);if(!g&&bad[it.id]!=null)v=bad[it.id];p.ans[it.id]=!g&&it.id=='G2'?{r:'S'}:{v:Math.round(v*100)/100}}});
+ p.ans.A4=g?{v:15,v2:22}:{v:22,v2:28};p.ans.A5=g?{v:2,v2:4}:{v:3,v2:5};p.ans.A1.v=g?25:34;return p}
+/* ============ RENDER ============ */
+const ico=n=>({ok:'M5 12l5 5 9-10',x:'M6 6l12 12M18 6L6 18',dot:'M12 12h.01'}[n]);
+function ringSvg(v,sz,id){const c=2*Math.PI*45;return`<svg width="${sz}" height="${sz}" viewBox="0 0 110 110" class="ring" role="img" aria-label="${v.toFixed(0)}%"><defs><linearGradient id="g${id}" x1="0" x2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#818CF8"/></linearGradient></defs><circle class="bg" cx="55" cy="55" r="45"/><circle class="fg" style="stroke:url(#g${id})" cx="55" cy="55" r="45" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/100)}"/></svg>`}
+function go(v,o={}){Object.assign(S,{view:v},o);charts.forEach(c=>c.destroy());charts=[];render();scrollTo(0,0)}
+function render(){const p=cur();$('#hn').textContent=p&&S.view!='home'?p.nome:'';const a=$('#app');
+ if(S.view=='home')a.innerHTML=home();else if(S.view=='cad')a.innerHTML=cad(p);else if(S.view=='chk'){a.innerHTML=chk(p);refresh()}else if(S.view=='res'){a.innerHTML=res(p);charts_(p);cnt()}}
+function home(){return`<div class="card" style="margin-bottom:14px"><b>Como usar</b> <button class="btn" data-act="guia" style="margin-left:8px">Guia completo do questionário</button><ol style="margin:6px 0 0 18px;padding:0"><li>Clique em <b>Novo projeto</b> e cadastre a obra (acabamento, substrato, sistema de camadas, altura).</li><li>Com os desenhos, memorial e especificações da fachada em mãos, percorra as categorias e marque <b>Conforme</b>, <b>Não conforme</b>, <b>N/A</b> ou <b>Sem informação</b> (o projeto não define aquilo: é uma lacuna).</li><li>Nos itens numéricos, digite o valor <u>especificado no projeto</u>; o app compara com a norma e decide sozinho.</li><li>Cada item tem o selo <b>Norma</b> (exigência de NBR) ou <b>Boa prática</b> (recomendação técnica para reduzir patologias e aumentar a durabilidade). Use os filtros para ver cada grupo, e os índices aparecem separados.</li><li>Abra <b>Resultados</b> para o parecer, os gráficos, as não conformidades com ação sugerida e a impressão em PDF.</li></ol></div><div class="row" style="margin-bottom:14px"><h2 style="margin:0">Projetos</h2><span></span><button class="btn pri" data-act="new" style="flex:0 0 auto">Novo projeto</button></div><div class="grid">${db.projects.map(p=>{const c=calc(p);return`<div class="card"><div class="row" style="flex-wrap:nowrap"><div style="flex:0 0 auto">${ringSvg(c.idx,64,p.id)}</div><div><b>${esc(p.nome)}</b><div class="lbl">${esc(p.end)}</div><div class="mono">${c.idx.toFixed(1)}% · <span style="color:${VC[c.k]}">${VERD[c.k]}</span></div></div></div><div class="row" style="margin-top:10px"><button class="btn" data-act="open" data-id="${p.id}">Abrir checklist</button><button class="btn" data-act="openres" data-id="${p.id}">Resultados</button><button class="btn" data-act="del" data-id="${p.id}" aria-label="Excluir">Excluir</button></div></div>`}).join('')}</div>`}
+function cad(p){p=p||{nome:'',end:'',resp:'',data:new Date().toISOString().slice(0,10),acab:'pint',subs:'conc',sist:'eb',alt:12,pav:4,comp:12,arg:'obra',vao:2.4};
+ const sel=(k,o)=>`<select data-p="${k}">${o.map(x=>`<option value="${x[0]}"${p[k]==x[0]?' selected':''}>${x[1]}</option>`).join('')}</select>`;
+ const f=(l,k,t='text')=>`<label>${l}<input type="${t}" data-p="${k}" value="${esc(p[k])}"></label>`;
+ return`<div class="card" style="max-width:720px;margin:auto"><h2>${cur()?'Dados da obra':'Novo projeto'}</h2><div class="two">${f('Nome da obra','nome')}${f('Endereço','end')}${f('Responsável','resp')}${f('Data','data','date')}
+ <label>Acabamento${sel('acab',[['pint','Pintura / textura'],['cer','Revestimento cerâmico']])}</label><label>Substrato${sel('subs',[['conc','Concreto armado'],['bc','Alvenaria de blocos cerâmicos'],['bco','Alvenaria de blocos de concreto'],['cel','Bloco de concreto celular'],['ae','Alvenaria estrutural'],['pc','Parede de concreto']])}</label>
+ <label>Sistema de camadas${sel('sist',[['eb','Emboço + reboco'],['cu','Camada única']])}</label>${f('Altura da edificação (m)','alt','number')}${f('Nº de pavimentos','pav','number')}${f('Comprimento do pano (m)','comp','number')}${f('Maior vão de esquadria (m)','vao','number')}<label>Argamassa${sel('arg',[['obra','Argamassa de obra'],['ind','Industrializada c/ controle de retração']])}</label></div>
+ <div class="row" style="margin-top:14px"><button class="btn pri" data-act="savep">Salvar e abrir checklist</button><button class="btn" data-act="home">Cancelar</button></div></div>`}
+function chk(p){const c=calc(p);return`<div class="shell"><nav class="side" aria-label="Categorias">${CATS.map(k=>`<button class="cat${S.cat==k.id?' on':''}" data-act="cat" data-id="${k.id}" aria-current="${S.cat==k.id}"><b class="mono">${k.id}</b><span>${k.n}<small id="cs${k.id}"></small></span></button>`).join('')}<button class="btn" data-act="res">Resultados</button><button class="btn" data-act="edit">Dados da obra</button></nav>
+ <section id="list" aria-live="polite"></section><aside class="hud"><div class="card" style="text-align:center"><div class="lbl">ICP – Índice de Conformidade Projetual</div><div id="hring" style="position:relative;display:inline-block"></div><div id="hv" class="sel"></div><div class="bar" style="margin-top:8px"><i id="hf"></i></div><div class="lbl" id="hc"></div><div class="mono lbl" id="ho" style="margin-top:6px"></div></div><div class="card"><div class="lbl">Corte do sistema de revestimento</div><div id="svgbox"></div><div class="lbl" id="lf"></div></div></aside></div>`}
+function listItems(p){const its=vis(p).filter(i=>S.layer?i.l==S.layer:i.c==S.cat).filter(i=>!S.org||org(i)==S.org).sort((a,b)=>!!naWhy(a,p)-!!naWhy(b,p));
+ const lf=S.layer?`<button class="btn" data-act="clr">Filtro: ${S.layer} ✕</button>`:'';
+ const ob=['','N','L','B'].map(x=>`<button class="btn" data-act="org" data-id="${x}" aria-pressed="${(S.org||'')==x}" style="${(S.org||'')==x?'border-color:var(--ac)':''}">${{'':'Todos','N':'Só norma','L':'Só literatura','B':'Só boas práticas'}[x]}</button>`).join(' ');return (S.layer?'':'<div class="card" style="margin-bottom:12px"><div class="lbl">Bloco '+S.cat+' · '+(CATS.find(k=>k.id==S.cat)||{}).n+'</div><p style="margin:4px 0 0;color:var(--mu)">'+(BLOCO[S.cat]||'')+'</p></div>')+'<div class="row" style="margin-bottom:10px">'+ob+'</div>'+(S.cat=='F'&&!S.layer?(()=>{const all=vis(p).filter(i=>i.c=='F').every(i=>(p.ans[i.id]||{}).r=='A');return '<div class="card" style="border-color:var(--ac);display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><button class="btn pri" data-act="fna" aria-pressed="'+all+'" style="flex:0 0 auto">'+(all?'Não se aplica ✓ (clique para desfazer)':'Não se aplica')+'</button><span class="lbl">Marca todos os itens da aba F como N/A</span></div>'})():'')+lf+its.map(it=>card(it,p)).join('')||'<div class="card">Nenhum item aplicável.</div>'}
+function card(it,p){const why=naWhy(it,p);if(why)return`<div class="card it na" id="i${it.id}" data-id="${it.id}" style="opacity:.7"><div class="top"><span class="k k${it.k}">${KN[it.k]}</span><code>${it.id} · ${esc(it.n)}</code><span class="sp"></span><button class="ib" data-info="${it.id}" aria-label="Informações sobre o item ${it.id}" aria-expanded="false">i</button><span class="chip sA">N/A automático</span></div><p style="margin:8px 0">${esc(it.d)}</p><div class="hint" style="color:var(--mu)">Não se aplica: ${why}.</div></div>`;const a=p.ans[it.id]||{},num_=it.t=='r';return`<div class="card it" id="i${it.id}" data-id="${it.id}" tabindex="0"><div class="top"><span class="k k${it.k}">${KN[it.k]}</span><span class="k" style="color:${({N:'var(--ac)',L:'var(--ac2)',B:'var(--gap)'})[org(it)]}">${ORGN[org(it)]}</span><code>${it.id} · ${esc(it.n)}</code><span class="sp"></span><button class="ib" data-info="${it.id}" aria-label="Informações sobre o item ${it.id}" aria-expanded="false">i</button><span class="chip" data-chip></span></div><p style="margin:8px 0" data-d>${esc(dtxt(it,p))}</p>
+ ${num_?`<div class="row"><label>Valor (${it.u})<input type="number" step="any" data-v value="${a.v==null?'':a.v}"></label><span class="lim mono">Limite: ${limTxt(it,p)}</span></div><div class="meter" data-meter></div>`:''}${it.t=='iv'?`<div class="row"><label>Mín. (mm)<input type="number" step="any" data-v value="${a.v==null?'':a.v}"></label><label>Máx. (mm)<input type="number" step="any" data-w value="${a.v2==null?'':a.v2}"></label></div>`:''}${it.t=='dc'||it.t=='fp'?`<label>${it.t=='dc'?'Área da placa (cm²)':'Profundidade do friso (mm)'}<input type="number" step="any" data-v value="${a.v==null?'':a.v}"></label>`:''}${it.id=='A1'&&p.acab=='pint'?`<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tela ${a.tela?'checked':''} style="width:auto"> Projeto prevê reforço com tela galvanizada (limite passa para 20–50 mm)</label>`:''}<div class="hint" data-hint></div>
+ <div class="seg" role="radiogroup" aria-label="Resposta ${it.id}">${(num_||['sum','fp','iv'].includes(it.t)?['A','S']:['C','N','A','S']).map(r=>`<button data-r="${r}" role="radio" aria-checked="${a.r==r}">${SN[r]}</button>`).join('')}</div><input type="text" data-o placeholder="Observação (ensaio, memorial, laudo)" value="${esc(a.o||'')}" aria-label="Observação ${it.id}"></div>`}
+function upd(it,p){const el=$('#i'+it.id);if(!el)return;if(naWhy(it,p))return;const dp=$('[data-d]',el);if(dp)dp.textContent=dtxt(it,p);const lm=$('.lim',el);if(lm&&it.t=='r')lm.textContent='Limite: '+limTxt(it,p);const s=st(it,p)||'_',a=p.ans[it.id]||{},ch=$('[data-chip]',el);ch.className='chip s'+s;ch.textContent=s=='_'?'Pendente':SN[s]+(s=='S'?' (lacuna)':'');
+ $$('.seg button',el).forEach(b=>b.setAttribute('aria-checked',a.r==b.dataset.r));$('[data-hint]',el).textContent=hint(it,p);
+ const m=$('[data-meter]',el);if(m){const L=lim(it,p),mn=L.mn||0,sm=(L.mx!=null?L.mx:(mn||1)*2)*1.4,v=num(a.v);m.innerHTML=`<b style="left:${mn/sm*100}%;width:${((L.mx!=null?L.mx:sm)-mn)/sm*100}%"></b>`+(v!=null?`<i style="left:${Math.min(98,Math.max(0,v/sm*100))}%"></i>`:'')}}
+function estudo(p){p.estudo=p.estudo||[];const s=estStats(p);return`<div class="card"><b>Estudo de espessura (alvo 20–30 mm)</b><table><tr><th>Pano</th><th>Mín</th><th>Máx</th><th>Média</th><th>Status</th><th></th></tr>${p.estudo.map((r,i)=>{const ok=num(r.mn)!=null&&num(r.mx)!=null&&num(r.mn)>=20&&num(r.mx)<=30;return`<tr><td><input type="text" data-e="${i}:p" value="${esc(r.p)}" aria-label="Pano"></td>${['mn','mx','md'].map(f=>`<td><input type="number" step="any" data-e="${i}:${f}" value="${r[f]??''}" aria-label="${f}"></td>`).join('')}<td class="${ok?'sC':'sN'}">${ok?'Dentro':'Fora'}</td><td><button class="btn" data-act="erow" data-id="${i}" aria-label="Remover">✕</button></td></tr>`}).join('')}</table><button class="btn" data-act="arow">Adicionar pano</button><div class="mono" style="margin-top:8px" id="est">${estTxt(s)}</div></div>`}
+const estTxt=s=>s?`${s.pct.toFixed(0)}% dentro de 20–30 mm · mín ${s.mn} · máx ${s.mx} · média ${s.m.toFixed(1)} · σ ${s.sd.toFixed(1)} mm`:'Sem medições.';
+function svg(p,c){const stt=l=>{const its=vis(p).filter(i=>i.l==l);if(!its.length)return['var(--na)',0];let bad=0,gap=0,cc=0,crit=0;its.forEach(i=>{const s=st(i,p);if(s=='N'){bad++;if(i.k=='C')crit=1}else if(s=='C')cc++;else if(s!='A')gap++});return[bad?'var(--no)':gap?'var(--gap)':cc?'var(--ok)':'var(--na)',crit]};
+ const e=num(p.ans.A1&&p.ans.A1.v),ct=st(CHECKLIST_DATA[0],p)=='N',g=id=>p.ans[id]||{},fr=g('E3').v,tr=g('G2').v,pe=g('H2').v;
+ const bx=LAYERS.filter(l=>!(l[0]=='reb'&&p.sist=='cu')&&!(l[0]=='col'||l[0]=='cer')||(p.acab=='cer'&&(l[0]=='col'||l[0]=='cer'))||(l[0]=='reb'&&p.sist=='eb')||l[0]=='base'||l[0]=='chap'||l[0]=='emb').map(l=>{const[col,cr]=stt(l[0]);return`<g class="layer ${cr?'crit':''}" data-layer="${l[0]}" tabindex="0" role="button" aria-label="${l[1]}"><title>${l[1]} – ${l[0]=='emb'?'20–30 mm (NBR 13749)':'ver itens'}</title><rect x="${l[3]}" y="14" width="${l[4]}" height="100" fill="${col}" fill-opacity=".35" stroke="${col}"/></g>`}).join('');
+ return`<svg viewBox="0 0 280 190" width="100%" role="img" aria-label="Corte do revestimento">${bx}<line x1="116" y1="14" x2="116" y2="114" stroke="var(--ac)" stroke-dasharray="3 2"/><text x="118" y="26" class="cota">tela</text><rect x="${p.acab=='pint'?'118':'200'}" y="58" width="${p.acab=='pint'?'23':'0'}" height="10" fill="var(--bg)" stroke="var(--ac)"/>
+ <text x="10" y="132" class="cota ${ct?'bad':''}">Espessura total: ${e!=null?e+' mm':'—'}</text><text x="10" y="146" class="cota ${st(CHECKLIST_DATA.find(i=>i.id=='E3'),p)=='N'?'bad':''}">Friso prof.: ${fr!=null?fr+' mm':'—'}</text><text x="10" y="160" class="cota ${st(CHECKLIST_DATA.find(i=>i.id=='G2'),p)=='N'?'bad':''}">Transpasse tela: ${tr!=null?tr+' cm':'—'}</text><text x="10" y="174" class="cota ${st(CHECKLIST_DATA.find(i=>i.id=='H2'),p)=='N'?'bad':''}">Caimento peitoril: ${pe!=null?pe+' %':'—'}</text></svg>`}
+function refresh(){const p=cur(),c=calc(p);if(!$('#list'))return;
+ $('#hring').innerHTML=ringSvg(c.idx,130,'h')+`<div class="big" style="position:absolute;inset:0;display:grid;place-items:center">${c.idx.toFixed(0)}%</div>`;const v=$('#hv');v.textContent=VERD[c.k];v.style.color=v.style.borderColor=VC[c.k];
+ $('#hf').style.width=c.fill+'%';$('#ho').textContent='Norma: '+oi(c,'N')+' · Literatura: '+oi(c,'L')+' · Boas práticas: '+oi(c,'B')+(c.T.pn?' · Penalidade por lacunas: −'+(c.T.pn/c.T.w*100).toFixed(1)+' pp':'');$('#hc').textContent=`${c.T.c} conf · ${c.T.n} não conf · ${c.T.g} lacunas · ${c.T.na} N/A · ${c.fill.toFixed(0)}% preenchido`+(c.crit.length?` · CRÍTICOS: ${c.crit.map(i=>i.id).join(', ')}`:'');
+ CATS.forEach(k=>{const e=$('#cs'+k.id);if(e){const x=c.cat[k.id];e.textContent=x.idx==null?'—':x.idx.toFixed(0)+'%'}});
+ $('#svgbox').innerHTML=svg(p,c);$('#lf').textContent=S.layer?'Filtrando: '+LAYERS.find(l=>l[0]==S.layer)[1]+' (clique de novo para limpar)':'Clique numa camada para filtrar o checklist'}
+function res(p){const c=calc(p),s=estStats(p),k=KN;return`<div class="pr pg"><h1>Relatório de conformidade – ${esc(p.nome)}</h1><p>${esc(p.end)} · ${esc(p.resp)} · ${esc(p.data)}</p><h2 style="color:${VC[c.k]}">${VERD[c.k]} – ${c.idx.toFixed(1)}%</h2></div>
+ <div class="row noprint" style="margin-bottom:12px"><button class="btn" data-act="back">← Checklist</button><button class="btn pri" data-act="print">Imprimir / Salvar PDF</button></div>
+ ${c.crit.length?`<div class="card" style="border-color:var(--no);margin-bottom:12px"><b style="color:var(--no)">Regra eliminatória:</b> itens críticos reprovados/sem informação – ${c.crit.map(i=>i.id+' '+esc(i.d)).join('; ')}</div>`:''}
+ <div class="two"><div class="card" style="text-align:center"><div class="lbl">ICP · ${new Date().toLocaleDateString('pt-BR')}</div><div style="position:relative;display:inline-block">${ringSvg(c.idx,200,'r')}<div class="big" style="position:absolute;inset:0;display:grid;place-items:center;font-size:48px" data-cnt="${c.idx}">0</div></div><div><span class="sel" style="color:${VC[c.k]}">${VERD[c.k]}</span></div></div>
+ <div class="card"><div class="grid" style="grid-template-columns:repeat(3,1fr)">${[['Aplicáveis',c.T.ap],['Conformes',c.T.c],['Não conf.',c.T.n],['Lacunas',c.T.g],['N/A',c.T.na],['Preench. %',c.fill.toFixed(0)]].map(x=>`<div><div class="lbl">${x[0]}</div><div class="big" data-cnt="${x[1]}">0</div></div>`).join('')}</div></div></div>
+ <div class="card" style="margin-top:14px"><div class="lbl">Atendimento por origem do requisito</div>${c.T.g?`<p class="mono" style="color:var(--gap)">${c.T.g} lacuna(s) de projeto${c.T.pn?' · penalidade aplicada: −'+(c.T.pn/c.T.w*100).toFixed(1)+' pontos percentuais (λ = '+db.cfg.pen+')':''}</p>`:''}<div class="two"><div><div class="big">${oi(c,'N')}</div><div>Requisitos de norma (NBR)</div></div><div><div class="big">${oi(c,'L')}</div><div>Literatura técnica</div></div><div><div class="big">${oi(c,'B')}</div><div>Boas práticas</div></div></div></div><div class="two" style="margin-top:14px"><div class="card"><div class="lbl">ICP por bloco</div><div class="cv"><canvas id="cb"></canvas></div></div><div class="card"><div class="lbl">Radar</div><div class="cv"><canvas id="cr"></canvas></div></div></div>
+ <div class="card pg" style="margin-top:14px"><div class="lbl">Mapa de calor: categoria × criticidade</div><table><tr><th></th>${['C','M','m'].map(x=>`<th>${k[x]}</th>`).join('')}</tr>${CATS.map(ct=>`<tr><td>${ct.id} ${ct.n}</td>${['C','M','m'].map(x=>{const h=c.heat[ct.id+x];if(!h)return'<td style="color:var(--mu)">—</td>';const r=Math.max(0,h.c)/h.a;return`<td title="${h.l.join(', ')}" style="background:color-mix(in srgb,${r>=.9?'var(--ok)':r>=.7?'var(--gap)':'var(--no)'} 35%,transparent)" class="mono">${(r*100).toFixed(0)}% (${h.c}/${h.a})</td>`}).join('')}</tr>`).join('')}</table></div>
+ <div class="card" style="margin-top:14px"><div class="lbl">Não conformidades e lacunas de projeto (${c.nc.length})</div><table><tr><th>Item</th><th>Crit.</th><th>Norma</th><th>Ação sugerida</th></tr>${c.nc.map(x=>`<tr data-go="${x.it.id}"><td class="mono ${x.s=='N'?'sN':'sS'}">${x.it.id}</td><td>${k[x.it.k]}</td><td class="mono">${esc(x.it.n)}</td><td>${esc(action(x))}</td></tr>`).join('')||'<tr><td colspan=4>Nenhuma.</td></tr>'}</table></div>
+ <div class="card" style="margin-top:14px"><div class="lbl">Estudo de espessura</div><table><tr><th>Pano</th><th>Mín</th><th>Máx</th><th>Média</th><th>Status</th></tr>${(p.estudo||[]).map(r=>{const ok=num(r.mn)>=20&&num(r.mx)<=30;return`<tr><td>${esc(r.p)}</td><td class="mono">${r.mn}</td><td class="mono">${r.mx}</td><td class="mono">${r.md}</td><td class="${ok?'sC':'sN'}">${ok?'Dentro de 20–30':'Fora da faixa'}</td></tr>`}).join('')}</table><p class="mono">${estTxt(s)}</p></div>`}
+function charts_(p){if(!window.Chart)return;const c=calc(p),L=CATS.filter(k=>c.cat[k.id].idx!=null),d=L.map(k=>+c.cat[k.id].idx.toFixed(1)),tc='#7C8DA8';
+ const o={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+ charts.push(new Chart($('#cb'),{type:'bar',data:{labels:L.map(k=>k.id+' '+k.n),datasets:[{data:d,backgroundColor:d.map(v=>v>=90?'#34D399':v>=70?'#FBBF24':'#FB7185'),borderRadius:4}]},options:{...o,indexAxis:'y',scales:{x:{min:0,max:100,grid:{color:'rgba(127,150,190,.15)'},ticks:{color:tc}},y:{grid:{display:false},ticks:{color:tc}}}}}));
+ charts.push(new Chart($('#cr'),{type:'radar',data:{labels:L.map(k=>k.id),datasets:[{data:d,borderColor:'#22D3EE',backgroundColor:'rgba(34,211,238,.2)',borderWidth:1.5}]},options:{...o,scales:{r:{min:0,max:100,grid:{color:'rgba(127,150,190,.2)'},angleLines:{color:'rgba(127,150,190,.2)'},ticks:{display:false},pointLabels:{color:tc}}}}}))}
+function cnt(){const r=matchMedia('(prefers-reduced-motion:reduce)').matches;$$('[data-cnt]').forEach(e=>{const v=+e.dataset.cnt,big=e.style.fontSize,f=x=>big?x.toFixed(0)+'%':Math.round(x);if(r){e.textContent=f(v);return}let t=0;const s=performance.now();(function s_(n){t=Math.min(1,(n-s)/900);e.textContent=f(v*(1-Math.pow(1-t,3)));if(t<1)requestAnimationFrame(s_)})(s)})}
+/* ============ EXPORTAÇÃO ============ */
+function csv(){const p=cur()||db.projects[0],q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';return'id;categoria;descricao;norma;criticidade;status;valor;observacao\n'+vis(p).map(i=>{const a=p.ans[i.id]||{};return[i.id,i.c,dtxt(i,p),i.n,KN[i.k],SN[st(i,p)]||'Pendente',a.v,a.o].map(q).join(';')}).join('\n')}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2200)}
+function dlg(h){const d=$('#dlg');d.innerHTML=h;d.showModal()}
+/* ============ EVENTOS ============ */
+function setAns(id,f,v){const p=cur(),it=CHECKLIST_DATA.find(i=>i.id==id),a=p.ans[id]=p.ans[id]||{},g0=W.gt30(p);a[f]=v;if(f=='r'&&(it.t=='r'||it.t=='dc'||it.t=='sum')&&!(v=='A'||v=='S'||it.t=='dc'))delete a.v;if((f=='v'||f=='v2')&&(a.r=='A'||a.r=='S')&&!(it.t=='dc'))delete a.r;
+ save();if(g0!=W.gt30(p)){$('#list').innerHTML=listItems(p);vis(p).filter(i=>i.c==S.cat).forEach(i=>upd(i,p))}else vis(p).filter(i=>S.layer?i.l==S.layer:i.c==S.cat).forEach(i=>upd(i,p));refresh()}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act],[data-r],[data-layer],[data-go]');if(!t)return;const p=cur();
+ if(t.dataset.r){setAns(t.closest('.it').dataset.id,'r',t.dataset.r);return}
+ if(t.dataset.layer){S.layer=S.layer==t.dataset.layer?null:t.dataset.layer;$('#list').innerHTML=listItems(p);vis(p).forEach(i=>upd(i,p));refresh();return}
+ if(t.dataset.go){const it=CHECKLIST_DATA.find(i=>i.id==t.dataset.go);S.cat=it.c;S.layer=null;go('chk');const el=$('#i'+it.id);if(el){el.scrollIntoView({block:'center'});el.focus()}return}
+ const a=t.dataset.act,id=t.dataset.id;
+ const A={home:()=>go('home',{pid:null}),new:()=>{S.pid=null;go('cad')},open:()=>go('chk',{pid:id,cat:'A',layer:null}),openres:()=>go('res',{pid:id}),del:()=>{if(confirm('Excluir projeto?')){db.projects=db.projects.filter(x=>x.id!=id);save();render()}},
+  edit:()=>go('cad'),res:()=>go('res'),back:()=>go('chk'),cat:()=>{S.cat=id;S.layer=null;go('chk')},clr:()=>{S.layer=null;go('chk')},org:()=>{S.org=id;const q=cur();$('#list').innerHTML=listItems(q);vis(q).forEach(i=>upd(i,q))},print:()=>print(),guia:()=>dlg(guiaHTML()),fna:()=>{const q=cur(),its=vis(q).filter(i=>i.c=='F'),all=its.every(i=>(q.ans[i.id]||{}).r=='A');its.forEach(i=>{if(all){const a=q.ans[i.id];if(a)delete a.r}else q.ans[i.id]={r:'A'}});save();$('#list').innerHTML=listItems(q);vis(q).forEach(i=>upd(i,q));refresh()},
+  theme:()=>{const d=document.documentElement,l=(d.dataset.theme||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'))=='light';d.dataset.theme=l?'dark':'light'},
+  arow:()=>{p.estudo.push({p:'Pano '+(p.estudo.length+1),mn:'',mx:'',md:''});save();$('#list').innerHTML=listItems(p);vis(p).forEach(i=>upd(i,p))},erow:()=>{p.estudo.splice(+id,1);save();$('#list').innerHTML=listItems(p);vis(p).forEach(i=>upd(i,p))},
+  savep:()=>{const o={};$$('[data-p]').forEach(x=>o[x.dataset.p]=x.type=='number'?+x.value:x.value);if(!o.nome){toast('Informe o nome da obra');return}let q=cur();if(q)Object.assign(q,o);else{q=Object.assign({id:'p'+Date.now(),ans:{},estudo:[]},o);db.projects.push(q);S.pid=q.id}save();go('chk',{cat:'A'})},
+  cfg:()=>{const c=db.cfg;dlg(`<h3>Configurações</h3><div class="two"><label>Peso Crítico<input type="number" id="cw1" value="${c.w.C}"></label><label>Peso Maior<input type="number" id="cw2" value="${c.w.M}"></label><label>Peso Menor<input type="number" id="cw3" value="${c.w.m}"></label><label>Limiar “Excelente” (%)<input type="number" id="co" value="${c.ok}"></label><label>Limiar “Satisfatório” (%)<input type="number" id="cp" value="${c.part}"></label><label>Penalidade por “Sem informação”, λ (0 a 1)<input type="number" step="0.05" min="0" max="1" id="cpen" value="${c.pen}"></label></div><div class="row"><button class="btn pri" data-act="cfgs">Salvar</button><button class="btn" data-act="close">Fechar</button></div>`)},
+  cfgs:()=>{db.cfg={w:{C:+$('#cw1').value||3,M:+$('#cw2').value||2,m:+$('#cw3').value||1},ok:+$('#co').value,part:+$('#cp').value,pend:false,pen:Math.min(1,Math.max(0,+$('#cpen').value||0))};save();$('#dlg').close();render()},close:()=>$('#dlg').close(),
+  io:()=>dlg(`<h3>Exportar / Importar</h3><textarea id="iot" rows="10" class="mono" aria-label="Dados"></textarea><div class="row" style="margin-top:8px"><button class="btn" data-act="ej">Exportar JSON</button><button class="btn" data-act="ec">Exportar CSV</button><button class="btn" data-act="ij">Importar JSON</button><button class="btn" data-act="cp">Copiar</button><button class="btn" data-act="close">Fechar</button></div>`),
+  ej:()=>{$('#iot').value=JSON.stringify(cur()||db,null,1)},ec:()=>{$('#iot').value=csv()},cp:()=>{$('#iot').select();try{navigator.clipboard.writeText($('#iot').value);toast('Copiado')}catch(x){document.execCommand('copy')}},
+  ij:()=>{try{const d=JSON.parse($('#iot').value);if(d.projects)db=d;else if(d.ans){d.id='p'+Date.now();db.projects.push(d)}else throw 0;save();$('#dlg').close();go('home');toast('Importado')}catch(x){toast('JSON inválido')}}};
+ if(A[a])A[a]()});
+document.addEventListener('input',e=>{const t=e.target,p=cur();
+ if(t.dataset.v!==undefined)setAns(t.closest('.it').dataset.id,'v',t.value===''?null:+t.value);else if(t.dataset.w!==undefined)setAns(t.closest('.it').dataset.id,'v2',t.value===''?null:+t.value);else if(t.dataset.tela!==undefined)setAns(t.closest('.it').dataset.id,'tela',t.checked);
+ else if(t.dataset.o!==undefined){const id=t.closest('.it').dataset.id;(p.ans[id]=p.ans[id]||{}).o=t.value;save()}
+ else if(t.dataset.e){const[i,f]=t.dataset.e.split(':');p.estudo[+i][f]=t.value;save();$('#est').textContent=estTxt(estStats(p));if(f!='p'){const tr=t.closest('tr'),r=p.estudo[+i],ok=num(r.mn)!=null&&num(r.mx)!=null&&num(r.mn)>=20&&num(r.mx)<=30,td=tr.children[4];td.textContent=ok?'Dentro':'Fora';td.className=ok?'sC':'sN'}}});
+document.addEventListener('keydown',e=>{const it=e.target.closest&&e.target.closest('.it');if(e.target.dataset&&e.target.dataset.layer&&(e.key=='Enter'||e.key==' ')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));return}
+ if(!it||e.target.tagName=='INPUT'||e.ctrlKey||e.metaKey)return;const m={c:'C',n:'N',a:'A',s:'S'}[e.key.toLowerCase()];
+ if(m){const x=CHECKLIST_DATA.find(i=>i.id==it.dataset.id);if(x.t=='q'||x.t=='dc'||m=='A'||m=='S'){setAns(it.dataset.id,'r',m);const nx=it.nextElementSibling;if(nx&&nx.classList.contains('it'))nx.focus()}}
+ else if(e.key=='ArrowDown'){e.preventDefault();const nx=it.nextElementSibling;if(nx&&nx.classList.contains('it'))nx.focus()}else if(e.key=='ArrowUp'){e.preventDefault();const pv=it.previousElementSibling;if(pv&&pv.classList.contains('it'))pv.focus()}});
+/* patch: render list on chk view */
+const _chk=chk;chk=function(p){return _chk(p)};
+const _ref=refresh;refresh=function(){const l=$('#list');if(l&&!l.dataset.ok){l.dataset.ok=1;l.innerHTML=listItems(cur());vis(cur()).forEach(i=>upd(i,cur()))}_ref()};
+/* corte: nomes das camadas, rótulo ao passar o mouse, destaque da camada selecionada e legenda */
+const selName=()=>{const L=LAYERS.find(l=>l[0]==S.layer);return L?L[1]+' (selecionada)':'Passe o mouse sobre uma camada'};
+const _svg=svg;svg=function(p,c){const ls=[];let s=_svg(p,c).replace(/<g class="layer ([^"]*)" data-layer="(\w+)"([\s\S]*?)<rect ([^>]*?)stroke="([^"]*)"\/><\/g>/g,(m,cl,id,mid,a,col)=>{const on=S.layer==id;ls.push([id,LAYERS.find(l=>l[0]==id)[1],col]);return`<g class="layer ${cl}${on?' on':''}" data-layer="${id}" style="opacity:${S.layer&&!on?.4:1}"${mid}<rect ${a.replace('fill-opacity=".35"',on?'fill-opacity=".8"':'fill-opacity=".35"')}stroke="${col}" stroke-width="${on?3:1}"/></g>`});
+ s=s.replace(/(<svg[^>]*>)/,'$1<text id="lname" x="140" y="9" text-anchor="middle" class="cota">'+selName()+'</text>');
+ return s+'<div class="lg" role="group" aria-label="Camadas">'+ls.map(l=>`<button class="btn" data-layer="${l[0]}" aria-pressed="${S.layer==l[0]}"><i style="background:${l[2]}"></i>${l[1]}</button>`).join('')+'</div>'};
+document.addEventListener('mouseover',e=>{const n=$('#lname');if(!n)return;const t=e.target.closest&&e.target.closest('[data-layer]'),L=t&&LAYERS.find(l=>l[0]==t.dataset.layer);n.textContent=L?L[1]:selName()});
+/* ===== Coerência com o TCC (cap. 3): blocos, ICP, guia do questionário ===== */
+const BLOCO={A:'Verifica se o projeto define a espessura do revestimento externo (20 a 30 mm), o fracionamento em emboço/reboco ou camada única e as medidas para espessuras acima de 30 mm.',B:'Verifica se o projeto especifica o Ra mínimo (≥ 0,30 MPa), o ensaio de arrancamento e o traço da argamassa, para evitar excesso de cimento (argamassa rígida e sujeita a fissuras).',C:'Verifica o tipo de chapisco, sua coerência com a sucção do substrato, a solicitação de cura úmida e a limpeza prévia da base.',D:'Verifica a argamassa (tipo, traço, estado fresco, retração), os prazos mínimos entre etapas e o controle tecnológico de canteiro.',E:'Verifica juntas estruturais, dessolidarização, frisos (pintura/textura) e juntas de movimentação (cerâmica).',F:'Só para fachada cerâmica: placas BIa/BIb, EPU, argamassa colante AC-III, dupla colagem, modulação e limite de pontos ocos.',G:'Telas de reforço nas transições entre substratos distintos: transpasse, posição no emboço e fixação. N/A em parede de concreto.',H:'Vergas, contravergas, peitoris, pingadeiras e junta de esquadria: dimensionamento e estanqueidade.',I:'Requisitos de desempenho do SVVE (NBR 15575-4): estrutural, estanqueidade, choques térmicos, conforto termoacústico e incêndio.',J:'Boas práticas preventivas para durabilidade: coroamentos, reforços em quinas, painel-protótipo, hidrofugante, manutenção.'};
+F('C3').d='Projeto especifica o tipo de chapisco (convencional, aditivado, rolado ou industrializado)';
+F('C6').d='Projeto/memorial solicita a cura úmida do chapisco (período mínimo conforme NBR 7200)';
+const _res=res;res=function(p){return _res(p).replace(/<div class="card" style="margin-top:14px"><div class="lbl">Estudo de espessura<\/div>[\s\S]*$/,'')};
+const guiaHTML=()=>`<h3>Sobre o questionário</h3><p><b>O que é:</b> um checklist de <u>auditoria documental</u> de projeto de fachada. Ele avalia o que está <b>especificado no projeto</b> (pranchas, detalhes e memorial descritivo), não a obra executada. Os critérios vêm das normas ABNT, da literatura técnica e de boas práticas, e a nota final é o ICP (Índice de Conformidade Projetual).</p>
+<h4>Como usar</h4><ol><li>Cadastre a obra (acabamento, substrato, sistema de camadas, altura, pavimentos). O cadastro ativa ou oculta blocos e itens automaticamente.</li><li>Com o projeto em mãos, percorra os blocos A a J e responda cada item.</li><li>Acompanhe o ICP ao vivo no painel lateral e abra <b>Resultados</b> para o parecer, os gráficos e as ações sugeridas.</li></ol>
+<h4>As quatro respostas</h4><ul><li><b>Conforme (1,0):</b> o projeto traz representação gráfica detalhada e especificação técnica completa, explícita e compatível com o parâmetro exigido.</li><li><b>Não conforme (0,0):</b> o projeto especifica o parâmetro em desacordo com a norma ou a recomendação.</li><li><b>Sem informação (−λ):</b> o item foi omitido nas pranchas, detalhes e memoriais (lacuna de projeto). Recebe nota negativa (λ = 0,5 por padrão, ajustável em Configurações), porque a omissão deixa a decisão para o canteiro e vale menos que uma especificação errada.</li><li><b>N/A (excluído):</b> o critério não se aplica à tipologia ou ao acabamento cadastrados e sai do cálculo.</li></ul><p>Nos itens com valor, digite o valor <b>especificado no projeto</b>; o app compara com o limite e decide.</p>
+<h4>Origem e criticidade de cada item</h4><p><b>Origem:</b> Norma (exigência explícita da ABNT), Literatura (bibliografia e manuais técnicos) ou Boa prática (recomendação preventiva adicional). Use os filtros “Só norma / literatura / boas práticas”. <b>Criticidade (peso):</b> Crítico = 3 (segurança, estanqueidade ou patologia severa), Maior = 2, Menor = 1.</p>
+<h4>Como o ICP é calculado</h4><p>ICP (%) = Σ(nota × peso) ÷ Σ(1,0 × peso dos itens aplicáveis) × 100, por bloco e global (o resultado não fica abaixo de 0%). Faixas (Tabela 4): ICP = 100% (todos os itens aplicáveis conformes) Conforme; ICP ≥ 90% com todos os itens críticos conformes Excelente; 70% ≤ ICP &lt; 90% Satisfatório; ICP &lt; 70% Insuficiente. <b>Regra eliminatória:</b> qualquer item Crítico não conforme ou sem informação impede as faixas Excelente e Conforme (o projeto fica, no máximo, Satisfatório).</p>
+<h4>Os blocos</h4><ul>${Object.keys(BLOCO).map(k=>'<li><b>'+k+' – '+CATS.find(c=>c.id==k).n+':</b> '+BLOCO[k]+'</li>').join('')}</ul>
+<h4>Dicas</h4><ul><li>Atalhos no cartão focado: C, N, A, S e setas ↑↓.</li><li>Itens que não se aplicam ao cadastro da obra (por exemplo, itens cerâmicos em fachada de textura) aparecem como “N/A automático” e ficam fora do cálculo.</li><li>Em cada item, o ícone <b>i</b> abre uma explicação orientativa sobre o que verificar.</li><li>Na aba F há o botão “Não se aplica”, que marca a aba toda como N/A.</li><li>Clique numa camada do corte para filtrar os itens relacionados.</li><li>Os parâmetros de traço (≥ 4 partes de areia por 1 de cimento; ≤ 350 kg/m³) são referências adotadas no estudo e podem ser editados em PARAMETROS_NORMATIVOS.</li></ul><div class="row"><button class="btn pri" data-act="close">Entendi</button></div>`;
+/* ===== N/A automático pelo cadastro e caixa de informação (i) por item ===== */
+const WHY={cer:'o acabamento cadastrado não é revestimento cerâmico',fr:'o acabamento cadastrado não é pintura/textura',eb:'o sistema cadastrado não é emboço + reboco',cu:'o sistema cadastrado não é camada única',gt30:'a espessura total informada em A1 não ultrapassa o limite (30 mm; 80 mm em cerâmica)',trans:'o substrato é parede de concreto (sem transição concreto/alvenaria)'};
+const naWhy=(it,p)=>it.w&&!W[it.w](p)?WHY[it.w]:'';
+const INFO={
+A1:'Procure no projeto de revestimento (cortes e memorial) a espessura total máxima prevista para a parede externa. Conforme se estiver entre 20 e 30 mm; acima de 30 mm exige camadas sucessivas e tela.',
+A4:'Verifique se o projeto informa a espessura mínima e a máxima do emboço (usual de 15 a 25 mm). Digite os dois valores: basta o intervalo estar descrito.',
+A5:'Informe o intervalo de espessura previsto para o reboco (usual de 2 a 5 mm), a camada fina de acabamento sobre o emboço.',
+A6:'Cálculo automático: soma o máximo do emboço com o do reboco e compara com o limite de 30 mm da NBR 13749. Preencha os máximos em A4 e A5.',
+A7:'A camada única substitui emboço e reboco. Informe o intervalo de espessura descrito no projeto; o máximo não pode passar de 30 mm.',
+A8:'Confira se o projeto ou o memorial especifica a espessura do revestimento, sem deixar a definição para o canteiro.',
+A9:'Só se aplica quando a espessura total passa de 30 mm. Verifique se o projeto prevê aplicação em camadas sucessivas.',
+A10:'Só se aplica quando a espessura passa de 30 mm. Verifique se há tela de reforço intermediária (metálica galvanizada) dentro do revestimento.',
+B1:'A resistência de aderência (Ra) mostra o quanto o revestimento está colado à base. Digite o valor mínimo especificado em projeto; a NBR 13749 exige ao menos 0,30 MPa na parede externa.',
+B2:'Verifique se o projeto ou o memorial prevê ensaio de arrancamento (aderência à tração) em obra para controle do revestimento.',
+B3:'Digite o traço em volume: partes de areia para 1 de cimento. Traços muito ricos (menos de 4 partes) geram argamassa rígida e fissuração. Valor de referência adotado no estudo.',
+B6:'Digite o consumo de cimento por m³ de argamassa especificado. Acima de 350 kg/m³ (referência adotada no estudo) há excesso de cimento e risco de fissuras.',
+C3:'Verifique se o memorial define o tipo de chapisco (convencional, aditivado, rolado ou industrializado). O chapisco prepara a base e regula a sucção.',
+C4:'Em alvenaria (alta sucção) o chapisco reduz a absorção; em concreto liso (baixa sucção) ele aumenta a aderência. Confira se o tipo escolhido combina com o substrato.',
+C6:'Verifique se o memorial solicita a cura úmida do chapisco (mantê-lo úmido nas primeiras horas), que evita a secagem precoce e a perda de aderência.',
+C8:'Verifique se o projeto ou o memorial indica a limpeza do substrato antes do revestimento, retirando poeira, desmoldante e eflorescências que impedem a aderência.',
+D1:'Verifique se o memorial define o tipo e o traço da argamassa, suas propriedades no estado fresco (plasticidade, fluidez, retenção de água) e o controle de retração.',
+D2:'Informe o prazo mínimo, em dias, previsto entre o chapisco e o emboço. A NBR 7200 pede ao menos 3 dias.',
+D3:'Informe o prazo previsto entre o emboço e o acabamento. Mínimo de 21 dias para argamassa de obra e 14 para industrializada com controle de retração (campo Argamassa do cadastro).',
+D4:'Verifique se o memorial prevê controle tecnológico em canteiro: inspeção das interfaces e ensaios da argamassa.',
+E1:'Friso é um sulco horizontal na argamassa que controla fissuras. Verifique se o projeto prevê friso a cada pavimento, alinhado às vigas, em fachada de pintura/textura.',
+E2:'Digite a largura do friso indicada no detalhe. Referência da ABCP: de 15 a 20 mm.',
+E3:'Digite a profundidade do friso. Deve ser cerca de metade da espessura (e/2) e deixar ao menos 10 mm de argamassa no fundo. O app usa o valor de A1 como espessura.',
+E4:'Verifique se o projeto orienta executar o friso logo após o desempeno, com marcação por mangueira de nível ou régua guia.',
+E5:'Onde a estrutura tem junta de dilatação, o revestimento deve acompanhá-la até a superfície e ser selado com mástique elastomérico. Confira o detalhe no projeto.',
+E6:'Digite o espaçamento vertical entre juntas horizontais de movimentação da fachada cerâmica: a cada pavimento ou, no máximo, 3 m.',
+E7:'Digite o espaçamento horizontal entre juntas verticais de movimentação na fachada cerâmica: no máximo 6 m em panos retos contínuos.',
+E8:'Confira se o detalhe da junta de movimentação prevê seccionamento total das camadas, tarugo limitador, selante (poliuretano ou MS) e rejunte deformável.',
+E9:'Juntas de dessolidarização desacoplam o revestimento de quinas, cantos, platibandas e esquadrias. Verifique se estão detalhadas no projeto.',
+F1:'Verifique se o projeto especifica placas de baixa absorção de água, grupos BIa ou BIb.',
+F2:'EPU é a expansão da placa por umidade. Verifique se o projeto informa o valor limite (NBR 13755: inferior a 0,6 mm/m).',
+F3:'Verifique se a argamassa colante especificada é AC-III ou AC-III-E, indicada para fachadas.',
+F4:'Dupla colagem é aplicar argamassa na base e no verso da placa. É exigida para placas acima de 400 cm² ou acima do térreo. Digite a área da placa e confirme se o projeto prevê a técnica.',
+F5:'Verifique se há projeto executivo com a modulação (paginacão) das placas e a espessura das juntas de assentamento.',
+F6:'Pontos ocos são vazios sob a placa. Verifique se o projeto informa o percentual máximo admitido (preenchimento do tardoz de pelo menos 95%).',
+G1:'A tela de reforço previne fissuras onde concreto e alvenaria se encontram (vigas e pilares). Verifique se o projeto a prevê nessas interfaces.',
+G2:'Digite o transpasse da tela para cada lado da linha de contato entre os materiais. Mínimo de 15 cm (20 cm recomendável).',
+G3:'A tela deve ficar dentro do emboço (terço médio ou externo), nunca sobre alvenaria crua ou chapisco. Confira o detalhe.',
+G4:'Verifique se o projeto prevê fixação mecânica da tela com pinos ou chumbadores galvanizados, sem ondulações.',
+H1:'Digite o quanto a verga/contraverga ultrapassa cada lado do vão. Mínimo de 20 cm e de L/5, sendo L a largura do maior vão (campo do cadastro).',
+H2:'Digite o caimento do peitoril para fora, em %. Mínimo de 2% (recomendável de 3 a 5%), para a água não acumular junto à esquadria.',
+H3:'Pingadeira ou lacrimal é o sulco na face inferior do peitoril que faz a água pingar longe da parede. Confira se aparece no detalhe.',
+H4:'Verifique se os arremates de esquadrias e as interfaces entre materiais diferentes estão detalhados no projeto.',
+H5:'Vergas devem existir sobre todos os vãos e contravergas sob janelas, com altura de ao menos 10 cm (NBR 8545).',
+H6:'Para vãos maiores que 2,40 m, a verga ou contraverga precisa ser calculada como viga. Marque N/A se não há vão desse tamanho.',
+H7:'Quando os vãos estão próximos e na mesma altura, recomenda-se uma única verga contínua. Marque N/A se não houver esse caso.',
+H8:'Verifique se o projeto indica impermeabilização da base superior da contraverga (requadro) sob o peitoril.',
+H9:'Digite quanto o peitoril avança além do plano da fachada acabada. Referência: de 2 a 5 cm.',
+H10:'Digite a largura do lacrimal (sulco inferior do peitoril). Mínimo de 10 mm.',
+H11:'Digite a profundidade do lacrimal. Mínimo de 5 mm.',
+H12:'Digite o afastamento do lacrimal em relação à aresta externa do peitoril. Mínimo de 1,5 cm.',
+H13:'Digite o embutimento lateral do peitoril na alvenaria (mínimo de 2 cm de cada lado). Abas de contenção também atendem.',
+H14:'Verifique se o projeto indica selante elastomérico resistente a UV (poliuretano ou silicone neutro) na junta entre esquadria e peitoril.',
+I1:'Verifique se o projeto ou o memorial demonstra a segurança estrutural da fachada: cargas de vento e impactos (ensaio, memorial ou laudo).',
+I2:'Verifique se há demonstração de estanqueidade à água de chuva (ensaio, memorial ou laudo).',
+I3:'Verifique se o sistema é avaliado quanto a choques térmicos, como chuva sobre fachada aquecida, sem fissuras.',
+I4:'Verifique se há avaliação do conforto térmico e acústico da fachada (NBR 15575-4).',
+I5:'Verifique se o projeto trata da segurança contra incêndio e da compartimentação do sistema de vedação externa.',
+J1:'O topo de platibandas e muretas deve ter proteção (rufo ou peça de coroamento com pingadeira) contra infiltração. Confira no detalhe.',
+J2:'Elementos salientes (marquises, balanços, soleiras) devem ter pingadeira ou friso para afastar a água da fachada.',
+J3:'Verifique se há reforço com tela ou cantoneira em quinas e encontros com esquadrias, pontos propensos a fissuras.',
+J4:'Verifique se o projeto considera as movimentações térmicas e higroscópicas dos materiais da fachada.',
+J5:'Verifique se juntas, frisos, telas, pingadeiras e arremates estão detalhados em escala nas pranchas.',
+J6:'Tintas e texturas devem ser compatíveis com a argamassa: permeáveis ao vapor e resistentes à alcalinidade. Confira a especificação.',
+J7:'Painel-protótipo (mock-up) é um trecho de teste aprovado antes da execução geral. Verifique se o projeto o prevê.',
+J8:'Verifique se há plano de inspeção e manutenção preventiva da fachada (selantes, juntas, pintura), com periodicidade.',
+J9:'Hidrofugante é um tratamento que repele água. Verifique se foi avaliado para áreas de exposição severa à chuva dirigida.',
+J10:'Verifique se as ancoragens de andaimes ou balancins estão previstas, com furos selados depois.',
+J11:'Verifique se o controle prevê inspeção por percussão (som cavo) para detectar placas mal aderidas.'};
+const pop=document.createElement('div');pop.id='pop';pop.hidden=true;pop.setAttribute('role','tooltip');document.body.append(pop);
+let popFor=null;
+function hidePop(){pop.hidden=true;if(popFor)popFor.setAttribute('aria-expanded','false');popFor=null}
+function showPop(b){const it=F(b.dataset.info),p=cur(),why=naWhy(it,p),lt=limTxt(it,p);
+ pop.innerHTML='<div class="lbl">'+it.id+' · '+esc(it.n)+'</div><p>'+esc(INFO[it.id]||it.d)+'</p>'+(lt?'<p class="mono" style="color:var(--ac)">Limite: '+esc(lt)+'</p>':'')+(why?'<p style="color:var(--mu)">N/A automático: '+esc(why)+'.</p>':'');
+ pop.hidden=false;popFor=b;b.setAttribute('aria-expanded','true');
+ const r=b.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;let l=Math.min(Math.max(8,r.left-w+30),innerWidth-w-8),t=r.bottom+8;if(t+h>innerHeight-8)t=Math.max(8,r.top-h-8);pop.style.left=l+'px';pop.style.top=t+'px'}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.ib');if(b){popFor===b?hidePop():showPop(b);return}if(!e.target.closest('#pop'))hidePop()},true);
+document.addEventListener('keydown',e=>{if(e.key=='Escape')hidePop()});
+addEventListener('scroll',hidePop,true);
+/* ===== Limite de espessura por acabamento e exceção com tela metálica ===== */
+P.esp.cerMax=80;DYN.espMax=p=>p.acab=='cer'?P.esp.cerMax:P.esp.ext[1];
+Object.assign(F('A1'),{mx:null,dmx:'espMax',d:'Espessura total máxima do revestimento externo descrita no projeto: 20 a 30 mm em pintura/textura e até 80 mm em cerâmica. Acima do limite, é conforme se houver reforço com tela metálica (A10).'});
+Object.assign(F('A7'),{mx:null,dmx:'espMax',d:'Projeto descreve o intervalo de espessura da camada única (máx. 30 mm; 80 mm em cerâmica; acima disso, só com tela metálica)'});
+F('A6').d='Soma dos valores máximos de emboço e reboco não ultrapassa o limite (30 mm; 80 mm em cerâmica) ou há tela metálica';
+F('A9').d='Aplicação em camadas sucessivas (espessura acima do limite)';
+F('A10').d='Projeto prevê reforço com tela metálica (necessária quando a espessura passa do limite: 30 mm em pintura/textura; 80 mm em cerâmica)';
+INFO.A1='Procure no projeto de revestimento (cortes e memorial) a espessura total máxima prevista. Limite: 30 mm em pintura/textura e 80 mm em cerâmica. Acima do limite o item fica conforme se o projeto prever tela metálica de reforço (responda o item A10).';
+INFO.A6='Cálculo automático: soma o máximo do emboço com o do reboco e compara com o limite (30 mm; 80 mm em cerâmica). Acima do limite, é conforme se houver tela metálica (A10). Preencha os máximos em A4 e A5.';
+INFO.A7='A camada única substitui emboço e reboco. Informe o intervalo descrito no projeto. O máximo é 30 mm (80 mm em cerâmica); acima disso, só com tela metálica (A10).';
+INFO.A9='Só se aplica quando a espessura total passa do limite (30 mm; 80 mm em cerâmica). Verifique se o projeto prevê aplicação em camadas sucessivas.';
+INFO.A10='Só se aplica quando a espessura passa do limite. Verifique se o projeto prevê reforço com tela metálica (galvanizada) no revestimento. Se estiver Conforme, a espessura em A1 (e em A6/A7) também fica conforme.';
+BLOCO.A='Verifica se o projeto define a espessura do revestimento externo (até 30 mm em pintura/textura e até 80 mm em cerâmica), o fracionamento em emboço/reboco ou camada única e o reforço com tela metálica quando a espessura passa do limite.';
+/* ===== A1: limite por acabamento (30 / 80 mm) e opção com tela galvanizada (50 mm) ===== */
+P.esp.telaMax=50;DYN.espMax=p=>p.acab=='cer'?P.esp.cerMax:(p.ans.A1&&p.ans.A1.tela?P.esp.telaMax:P.esp.ext[1]);
+W.gt30=p=>num(p.ans.A1&&p.ans.A1.v)>30;WHY.gt30='a espessura total informada em A1 não ultrapassa 30 mm';
+Object.assign(F('A1'),{mx:null,dmx:'espMax',d:'Espessura total máxima do revestimento externo descrita no projeto (emboço + reboco, ou camada única): 20 a 30 mm'});
+Object.assign(F('A7'),{mx:30,dmx:null,d:'Projeto descreve o intervalo de espessura da camada única (máx. ≤ 30 mm)'});
+F('A6').d='Soma dos valores máximos de emboço e reboco não ultrapassa 30 mm';
+F('A9').d='Aplicação em camadas sucessivas (e > 30 mm)';
+F('A10').d='Tela de reforço intermediária (e > 30 mm)';
+INFO.A1='Procure no projeto de revestimento (cortes e memorial) a espessura total máxima prevista. Limite: 20 a 30 mm em pintura/textura e 20 a 80 mm em cerâmica. Em pintura/textura, marque a caixa da tela galvanizada se o projeto a prever: o limite passa a 20–50 mm. Acima de 30 mm, veja também os itens A9 e A10.';
+INFO.A6='Cálculo automático: soma o máximo do emboço com o do reboco e compara com o limite de 30 mm da NBR 13749. Preencha os máximos em A4 e A5.';
+INFO.A7='A camada única substitui emboço e reboco. Informe o intervalo de espessura descrito no projeto; o máximo não pode passar de 30 mm.';
+INFO.A9='Só se aplica quando a espessura total passa de 30 mm. Verifique se o projeto prevê aplicação em camadas sucessivas.';
+INFO.A10='Só se aplica quando a espessura passa de 30 mm. Verifique se há tela de reforço intermediária (metálica galvanizada) dentro do revestimento.';
+BLOCO.A='Verifica se o projeto define a espessura do revestimento externo (20 a 30 mm), o fracionamento em emboço/reboco ou camada única e as medidas para espessuras acima de 30 mm.';
+F('A7').mx=null;F('A7').dmx='espMax';INFO.A7='A camada única substitui emboço e reboco. Informe o intervalo de espessura descrito no projeto. O máximo é de 30 mm em pintura/textura (50 mm se a tela galvanizada estiver marcada no item A1) e de 80 mm em cerâmica.';
+/* enunciado dinâmico de A1 e A7 conforme acabamento e tela galvanizada */
+const dtxt=(it,p)=>{if(it.id!='A1'&&it.id!='A7')return it.d;const tela=p.acab=='pint'&&p.ans.A1&&p.ans.A1.tela,mx=DYN.espMax(p),how=p.acab=='cer'?'revestimento cerâmico':tela?'pintura/textura com reforço de tela galvanizada':'pintura/textura sem tela de reforço';
+ return it.id=='A1'?'Espessura total máxima do revestimento externo descrita no projeto (emboço + reboco, ou camada única): 20 a '+mx+' mm ('+how+')':'Projeto descreve o intervalo de espessura da camada única (máx. ≤ '+mx+' mm: '+how+')'};
+/* observações registradas nos itens, no relatório de resultados */
+const _res2=res;res=function(p){const obs=CHECKLIST_DATA.filter(i=>{const o=(p.ans[i.id]||{}).o;return o&&o.trim()&&!naWhy(i,p)});
+ const rows=obs.map(i=>{const s=st(i,p)||'_';return'<tr data-go="'+i.id+'"><td><b class="mono">'+i.id+'</b> – '+esc(dtxt(i,p))+'</td><td class="s'+s+'">'+(s=='_'?'Pendente':SN[s])+'</td><td style="white-space:pre-wrap">'+esc(p.ans[i.id].o)+'</td></tr>'}).join('');
+ return _res2(p)+'<div class="card" style="margin-top:14px"><div class="lbl">Observações registradas nos itens ('+obs.length+')</div>'+(obs.length?'<table><tr><th>Item</th><th>Situação</th><th>Observação</th></tr>'+rows+'</table>':'<p>Nenhuma observação foi registrada nos itens.</p>')+'</div>'};
+load();db.cfg.pend=false;if(db.cfg.pen==null)db.cfg.pen=.5;render();
+</script></body></html>
