@@ -42,7 +42,7 @@ dialog{background:var(--bg2);color:var(--tx);border:1px solid var(--ac);border-r
 .pr{display:none}
 @media print{:root{--bg:#fff;--bg2:#fff;--card:#fff;--bd:#bbb;--tx:#111;--mu:#444;--ac:#075985;--ok:#047857;--no:#BE123C;--gap:#B45309;--na:#555}body{background:#fff}header,.noprint,.side,.toast,body::before{display:none!important}.card{box-shadow:none;backdrop-filter:none;break-inside:avoid}.pr{display:block}.pg{break-after:page}.two{grid-template-columns:1fr 1fr}}
 </style></head><body>
-<header><h1>Façade<span style="color:var(--ac)">Check</span></h1><span id="hn" class="mono lbl"></span><span class="sp"></span><span id="sv" class="lbl"></span>
+<header><h1>Façade<span style="color:var(--ac)">Check</span></h1><span id="hn" class="mono lbl"></span><span class="sp"></span><span class="lbl" title="Versão do aplicativo">v1.1</span><span id="sv" class="lbl"></span>
 <button class="btn" data-act="home">Projetos</button><button class="btn" data-act="guia">Sobre o questionário</button><button class="btn" data-act="cfg">Configurações</button><button class="btn" data-act="io">Exportar / Importar</button><button class="btn" data-act="theme" aria-label="Alternar tema">Tema</button></header>
 <main id="app"></main><dialog id="dlg"></dialog>
 <script>
@@ -289,7 +289,7 @@ function charts_(p){if(!window.Chart)return;const c=calc(p),L=CATS.filter(k=>c.c
  charts.push(new Chart($('#cr'),{type:'radar',data:{labels:L.map(k=>k.id),datasets:[{data:d,borderColor:'#22D3EE',backgroundColor:'rgba(34,211,238,.2)',borderWidth:1.5}]},options:{...o,scales:{r:{min:0,max:100,grid:{color:'rgba(127,150,190,.2)'},angleLines:{color:'rgba(127,150,190,.2)'},ticks:{display:false},pointLabels:{color:tc}}}}}))}
 function cnt(){const r=matchMedia('(prefers-reduced-motion:reduce)').matches;$$('[data-cnt]').forEach(e=>{const v=+e.dataset.cnt,big=e.style.fontSize,f=x=>big?x.toFixed(0)+'%':Math.round(x);if(r){e.textContent=f(v);return}let t=0;const s=performance.now();(function s_(n){t=Math.min(1,(n-s)/900);e.textContent=f(v*(1-Math.pow(1-t,3)));if(t<1)requestAnimationFrame(s_)})(s)})}
 /* ============ EXPORTAÇÃO ============ */
-function csv(){const p=cur()||db.projects[0],q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';return'id;categoria;descricao;norma;criticidade;status;valor;observacao\n'+vis(p).map(i=>{const a=p.ans[i.id]||{};return[i.id,i.c,i.d,i.n,KN[i.k],st(i,p)||'pendente',a.v,a.o].map(q).join(';')}).join('\n')}
+function csv(){const p=cur()||db.projects[0],q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';return'id;categoria;descricao;norma;criticidade;status;valor;observacao\n'+vis(p).map(i=>{const a=p.ans[i.id]||{};return[i.id,i.c,dtxt(i,p),i.n,KN[i.k],SN[st(i,p)]||'Pendente',a.v,a.o].map(q).join(';')}).join('\n')}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2200)}
 function dlg(h){const d=$('#dlg');d.innerHTML=h;d.showModal()}
 /* ============ EVENTOS ============ */
@@ -454,5 +454,9 @@ F('A7').mx=null;F('A7').dmx='espMax';INFO.A7='A camada única substitui emboço 
 /* enunciado dinâmico de A1 e A7 conforme acabamento e tela galvanizada */
 const dtxt=(it,p)=>{if(it.id!='A1'&&it.id!='A7')return it.d;const tela=p.acab=='pint'&&p.ans.A1&&p.ans.A1.tela,mx=DYN.espMax(p),how=p.acab=='cer'?'revestimento cerâmico':tela?'pintura/textura com reforço de tela galvanizada':'pintura/textura sem tela de reforço';
  return it.id=='A1'?'Espessura total máxima do revestimento externo descrita no projeto (emboço + reboco, ou camada única): 20 a '+mx+' mm ('+how+')':'Projeto descreve o intervalo de espessura da camada única (máx. ≤ '+mx+' mm: '+how+')'};
+/* observações registradas nos itens, no relatório de resultados */
+const _res2=res;res=function(p){const obs=CHECKLIST_DATA.filter(i=>{const o=(p.ans[i.id]||{}).o;return o&&o.trim()&&!naWhy(i,p)});
+ const rows=obs.map(i=>{const s=st(i,p)||'_';return'<tr data-go="'+i.id+'"><td><b class="mono">'+i.id+'</b> – '+esc(dtxt(i,p))+'</td><td class="s'+s+'">'+(s=='_'?'Pendente':SN[s])+'</td><td style="white-space:pre-wrap">'+esc(p.ans[i.id].o)+'</td></tr>'}).join('');
+ return _res2(p)+'<div class="card" style="margin-top:14px"><div class="lbl">Observações registradas nos itens ('+obs.length+')</div>'+(obs.length?'<table><tr><th>Item</th><th>Situação</th><th>Observação</th></tr>'+rows+'</table>':'<p>Nenhuma observação foi registrada nos itens.</p>')+'</div>'};
 load();db.cfg.pend=false;if(db.cfg.pen==null)db.cfg.pen=.5;render();
 </script></body></html>
